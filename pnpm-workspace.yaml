@@ -1,0 +1,5 @@
+packages:
+  - "shared"
+  - "apps/backend/*"
+  - "apps/frontend/*"
+  - "shared/*"

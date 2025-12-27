@@ -1,0 +1,12 @@
+node_modules
+.idea
+
+# build files of backend and frontend.
+/**/dist
+
+#Environment
+.env
+
+# Frontend
+apps/frontend/main-app/
+apps/frontend/quickstart-file-based/

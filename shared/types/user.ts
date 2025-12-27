@@ -1,0 +1,11 @@
+export interface IUser {
+    user_id?: string;
+    username: string;
+    country_code: string;
+    phone_number: string;
+    password: string;
+    
+    email: string;
+    profilePicUrl?: string;
+    preferences?: Record<string, any>;
+}
