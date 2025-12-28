@@ -49,7 +49,7 @@ export const up = (pgm) => {
         CREATE TABLE IF NOT EXISTS expense_category (
             expense_cat_id INT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
             name VARCHAR(100) NOT NULL UNIQUE,
-            thumbnailUrl VARCHAR(200),
+            thumbnail_url VARCHAR(200),
             description VARCHAR(200)
         );
 
@@ -58,7 +58,7 @@ export const up = (pgm) => {
         CREATE TABLE IF NOT EXISTS expense (
             expense_id BIGINT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
             name VARCHAR(150) NOT NULL,
-            cat_id INT,
+            category_id INT,
             description VARCHAR(300),
             amount NUMERIC CHECK(amount > 0),
             currency CHAR(1) NOT NULL,
@@ -66,7 +66,7 @@ export const up = (pgm) => {
             created_by INT NOT NULL,
             recurring_frequency recurring_expense_freq,
             bill_image_url VARCHAR(200),
-            CONSTRAINT fk_cat_id FOREIGN KEY(cat_id) REFERENCES expense_category(expense_cat_id) ON DELETE SET NULL,
+            CONSTRAINT fk_cat_id FOREIGN KEY(category_id) REFERENCES expense_category(expense_cat_id) ON DELETE SET NULL,
             CONSTRAINT fk_user_id FOREIGN KEY(created_by) REFERENCES users(user_id) ON DELETE CASCADE
         );
 
@@ -76,7 +76,7 @@ export const up = (pgm) => {
             user_expense_id BIGINT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
             user_id INT NOT NULL,
             expense_id BIGINT NOT NULL,
-            isRecurringExpense BOOLEAN DEFAULT false,
+            is_recurring_expense BOOLEAN DEFAULT false,
             transaction_type user_transaction_type NOT NULL,
             amount NUMERIC CHECK(amount > 0),
             CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,

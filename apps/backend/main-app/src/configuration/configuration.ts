@@ -10,7 +10,7 @@ export default () => {
             assetsPath: process.env.STORAGE_ASSETS_PATH || 'storage/assets'
         },
         primaryDb: {
-            connectionUri: process.env.DATABASE_URI,
+            connectionUri: process.env.DATABASE_URL,
             databaseOptions: {}
         },
         sms: {
