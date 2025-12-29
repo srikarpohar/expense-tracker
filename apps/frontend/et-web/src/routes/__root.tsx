@@ -1,8 +1,25 @@
 // src/App.tsx
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet, useRouter } from "@tanstack/react-router";
 import logo from "../assets/logo.png"; // Import the logo image
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../context/auth/auth.context";
 
 const App = () => {
+  const { userData } = useContext(AuthContext);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if(userData) {
+      router.navigate({
+        to: "/dashboard"
+      })
+    } else {
+      router.navigate({
+        to: "/login"
+      })
+    }
+  }, []);
 
   return (
     <Outlet />

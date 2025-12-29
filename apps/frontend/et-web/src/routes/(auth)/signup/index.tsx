@@ -18,8 +18,9 @@ function SignupComponent() {
     handleSubmit,
     watch,
     formState: { errors }
-  } = useForm<IState>()
-  
+  } = useForm<IState>();
+
+  const router = useRouter();
 
   const signupMutation = useMutation({
     mutationFn: async (data: IState) => {
@@ -38,6 +39,9 @@ function SignupComponent() {
     },
     onSuccess: (response: SignUpUserResponseDto) => {
       console.log("Signup successful", response.verification_id);
+      router.navigate({
+        to: "/login",
+      });
       return response;
     },
     onError: (error) => {
@@ -56,7 +60,6 @@ function SignupComponent() {
     return "Passwords do not match";
   };
 
-  const router = useRouter();
 
   return (
     <div className='h-full flex justify-center items-center'>

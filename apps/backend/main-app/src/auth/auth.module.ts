@@ -8,10 +8,12 @@ import { AuthenticatorRegistry } from "./providers/authenticator";
 import { GoogleAuthenticator } from "./providers/google-authenticator";
 import { OTPAuthenticator } from "./providers/otp-authenticator";
 import { UsersModule } from "src/users/users.module";
+import { UtilsModule } from "src/shared/utils/utils.module";
 
 @Module({
     imports: [
         UsersModule,
+        UtilsModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useFactory: (config: ConfigService) => ({
@@ -39,6 +41,7 @@ import { UsersModule } from "src/users/users.module";
         AuthenticatorRegistry
     ],
     exports: [
+        AuthService,
         JwtModule
     ]
 })

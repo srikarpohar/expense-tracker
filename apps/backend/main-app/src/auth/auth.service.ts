@@ -1,7 +1,7 @@
 import { ConflictException, HttpStatus, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { UsersService } from "src/users/users.service";
 import {JwtService} from "@nestjs/jwt";
-import {IUser, SignUpUserRequestDto} from "expense-tracker-shared";
+import {IUser, IUserPayload, SignUpUserRequestDto} from "expense-tracker-shared";
 import { AuthenticatorRegistry, AuthenticatorTypes } from "./providers/authenticator";
 import { OTPAuthenticator } from "./providers/otp-authenticator";
 import { UserVerificationsService } from "src/users/user_verifications/user_verifications.service";
@@ -58,6 +58,19 @@ export class AuthService {
         return isVerified;
     }
 
+    async verifyToken(token: string): Promise<IUserPayload> {
+        try {
+            const payload = await this.jwtService.verifyAsync<IUserPayload>(token);
+            return payload;
+        } catch {
+             throw new UnauthorizedException({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                data: null,
+                errorMessage: "Token got revoked. Please login again!"
+            });
+        }
+    }
+
     async loginUser(username: string, password: string) {
         const userData = (
             await this.usersService.findUserByField("username", username) ||
@@ -82,7 +95,7 @@ export class AuthService {
         }
 
         // User is authenticated. Create a jwt token and send it to client.
-        const jwtToken = await this.jwtService.signAsync({
+        const jwtToken = await this.jwtService.signAsync<IUserPayload>({
             sub: userData.user_id as string,
             username: userData.username
         });

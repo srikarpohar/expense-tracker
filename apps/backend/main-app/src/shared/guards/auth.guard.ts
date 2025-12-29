@@ -1,14 +1,16 @@
-import { CanActivate, ExecutionContext, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { IS_PUBLIC_API } from "./public.decorator";
+import { AuthService } from "src/auth/auth.service";
+import { APIUtilsService } from "../utils/api_utils.service";
 
 @Injectable()
 export class AuthGaurd implements CanActivate {
     
     constructor(
-        private jwtService: JwtService,
+        private apiUtilsService: APIUtilsService,
+        private authService: AuthService,
         private reflector: Reflector
     ) {}
 
@@ -22,33 +24,18 @@ export class AuthGaurd implements CanActivate {
         }
 
         const request = context.switchToHttp().getRequest<Request>();
-        const token = this.extractTokenFromHeader(request);
-        if (!token) {
-            throw new UnauthorizedException({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                data: null,
-                errorMessage: "No bearer token provided"
-            });
-        }
+        const token = this.apiUtilsService.extractTokenFromHeader(request);
 
-        try {
-            const payload = await this.jwtService.verifyAsync(token);
-            // 💡 We're assigning the payload to the request object here
-            // so that we can access it in our route handlers
-            request["user"] = payload;
-        } catch {
-            throw new UnauthorizedException({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                data: null,
-                errorMessage: "Token got revoked. Please login again!"
-            });
-        }
+        const payload = await this.authService.verifyToken(token);
+        // 💡 We're assigning the payload to the request object here
+        // so that we can access it in our route handlers
+        request["user"] = payload;
 
         return true;
     }
 
-    private extractTokenFromHeader(request: Request): string | undefined {
-        const token = request.cookies["authorization_token"] || "";
-        return token as string;
-    }
+    // private extractTokenFromHeader(request: Request): string | undefined {
+    //     const token = request.cookies["authorization_token"] || "";
+    //     return token as string;
+    // }
 }

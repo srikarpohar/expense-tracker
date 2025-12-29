@@ -2,16 +2,18 @@ import {Controller, Post, Res, UseInterceptors, UploadedFile, Req, Body, Get } f
 import {type Express, type Request, type Response} from "express";
 import { AuthService } from "./auth.service";
 import {FileInterceptor} from "@nestjs/platform-express";
-import { type LoginUserRequestDto, LoginUserResponseDto, SignUpUserRequestDto, SignUpUserResponseDto, type VerifySignupOtpRequestDto, VerifySignupOtpResponseDto } from "expense-tracker-shared";
+import { type LoginUserRequestDto, LoginUserResponseDto, SignUpUserRequestDto, SignUpUserResponseDto, type VerifySignupOtpRequestDto, VerifySignupOtpResponseDto, VerifyTokenResponseDTO } from "expense-tracker-shared";
 import { ResponseDto } from "src/types";
 import { AuthenticatorTypes } from "./providers/authenticator";
 import { ConfigService } from "@nestjs/config";
 import { PublicAPIResource } from "src/shared/guards/public.decorator";
+import { APIUtilsService } from "src/shared/utils/api_utils.service";
 
 @PublicAPIResource()
 @Controller("auth")
 export class AuthController {
     constructor(
+        private readonly apiUtilsService: APIUtilsService,
         private readonly authService: AuthService,
         private readonly configService: ConfigService
     ) {}
@@ -33,7 +35,7 @@ export class AuthController {
         });
     }
 
-    @Get("verify-otp")
+    @Post("verify-otp")
     async verifyOtp(
         @Body() body: VerifySignupOtpRequestDto,
         @Res() res: Response<ResponseDto<VerifySignupOtpResponseDto>>
@@ -63,6 +65,22 @@ export class AuthController {
         })
         res.status(201).send({
             data: {token},
+            statusCode: 201
+        })
+    }
+
+    @Get("verify-token")
+    async verifyToken(
+        @Req() req: Request,
+        @Res() res: Response<ResponseDto<VerifyTokenResponseDTO>>
+    ) {
+        const token = this.apiUtilsService.extractTokenFromHeader(req);
+        const tokenPayload = await this.authService.verifyToken(token);
+
+        res.status(201).send({
+            data: {
+                payload: tokenPayload
+            },
             statusCode: 201
         })
     }

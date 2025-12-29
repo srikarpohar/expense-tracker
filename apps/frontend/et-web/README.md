@@ -17,3 +17,8 @@
 ### Routing and Data fetching setup
 
 [Link](./docs/routing-and-data_fetching-setup.md)
+
+### TODO:
+
+- Add error boundary in index.tsx.
+- Add dashboard page UI.

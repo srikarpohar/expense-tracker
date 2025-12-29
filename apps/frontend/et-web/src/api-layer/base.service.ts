@@ -33,6 +33,9 @@ export class AxiosHttpApiRequestLayer implements IHTTPClient {
     queryParams?: D,
     headers?: AxiosHeaders,
   ): Promise<IApiResponse<R>> {
+    // Can implement decorator for this.
+    const abortController = new AbortController();
+    const signal = abortController.signal;
     const response = await this.axiosInstance.get<
       R,
       AxiosResponse<IApiResponse<R>>,
@@ -40,7 +43,9 @@ export class AxiosHttpApiRequestLayer implements IHTTPClient {
     >(`${this.baseUrl}${endpoint}`, {
       params: queryParams,
       headers: headers as AxiosHeaders,
+      signal,
     });
+
     return response.data;
   }
 

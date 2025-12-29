@@ -7,11 +7,10 @@ export const onResponseSuccessInterceptor = (response: AxiosResponse) => {
 };
 
 export const onResponseErrorInterceptor = (error: any) => {
-  console.error("Response error:", error);
   // Handle errors globally (e.g., redirect on 401, display error messages)
   if (error.response && error.response.status === 401) {
     // Unauthorized, redirect to login
-    // router.push('/login'); // Example with Vue Router
+    return Promise.reject(error.message);
   }
   return Promise.reject(error);
 };

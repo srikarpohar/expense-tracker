@@ -9,3 +9,8 @@ export interface IUser {
     profilePicUrl?: string;
     preferences?: Record<string, any>;
 }
+
+export interface IUserPayload {
+    sub: IUser["user_id"],
+    username: IUser["username"]   
+}

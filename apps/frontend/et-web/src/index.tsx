@@ -3,6 +3,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import {routeTree} from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
+import { AuthProvider } from "./context/auth/auth.provider";
 
 // if(process.env.NODE_ENV == "dev") {
 //     new EventSource('/esbuild').addEventListener('change', () => location.reload())
@@ -27,6 +28,8 @@ const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
     <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router}/>
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
     </QueryClientProvider>
 );
