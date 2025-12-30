@@ -8,6 +8,7 @@ export interface IHTTPClient {
     endpoint: string,
     queryParams?: D,
     headers?: Record<string, string>,
+    abortSignal?: AbortSignal,
   ): Promise<IApiResponse<R>>;
   post<D, R>(
     endpoint: string,

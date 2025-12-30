@@ -15,6 +15,13 @@ export class UsersService {
     ) {
     }
 
+    getJwtPayload(userData: IUser) {
+        return {
+            sub: userData.user_id as number,
+            username: userData.username
+        }
+    }
+
     async encryptData(data: string): Promise<string> {
         const saltRounds = this.configService.get<number>('password_salt') || 10;
         const salt = await bcrypt.genSalt(saltRounds);

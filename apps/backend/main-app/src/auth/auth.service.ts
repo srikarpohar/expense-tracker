@@ -71,7 +71,7 @@ export class AuthService {
         }
     }
 
-    async loginUser(username: string, password: string) {
+    async loginUser(username: string, password: string): Promise<{payload: IUserPayload, token: string}> {
         const userData = (
             await this.usersService.findUserByField("username", username) ||
             await this.usersService.findUserByField("email", username)
@@ -95,11 +95,9 @@ export class AuthService {
         }
 
         // User is authenticated. Create a jwt token and send it to client.
-        const jwtToken = await this.jwtService.signAsync<IUserPayload>({
-            sub: userData.user_id as string,
-            username: userData.username
-        });
+        const payload = this.usersService.getJwtPayload(userData);
+        const jwtToken = await this.jwtService.signAsync<IUserPayload>(payload);
 
-        return jwtToken;
+        return {payload, token: jwtToken};
     }
 }

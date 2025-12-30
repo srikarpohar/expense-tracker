@@ -53,7 +53,7 @@ export class AuthController {
         @Body() body: LoginUserRequestDto,
         @Res() res: Response<ResponseDto<LoginUserResponseDto>>
     ) {
-        const token = await this.authService.loginUser(
+        const {payload, token} = await this.authService.loginUser(
             body.username, 
             body.password
         );
@@ -64,7 +64,10 @@ export class AuthController {
             secure: true,
         })
         res.status(201).send({
-            data: {token},
+            data: {
+                payload,
+                token
+            },
             statusCode: 201
         })
     }

@@ -1,6 +1,7 @@
 import axios, {
   AxiosHeaders,
   type AxiosInstance,
+  type AxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
 import type { IApiResponse, IHTTPClient } from "../types/api.types.ts";
@@ -31,20 +32,23 @@ export class AxiosHttpApiRequestLayer implements IHTTPClient {
   async get<D, R>(
     endpoint: string,
     queryParams?: D,
-    headers?: AxiosHeaders,
+    headers?: AxiosHeaders | {},
+    abortSignal?: AbortSignal,
   ): Promise<IApiResponse<R>> {
-    // Can implement decorator for this.
-    const abortController = new AbortController();
-    const signal = abortController.signal;
+    let config: AxiosRequestConfig = {
+      params: queryParams,
+      headers: headers as AxiosHeaders,
+    };
+
+    if (abortSignal) {
+      config["signal"] = abortSignal;
+    }
+
     const response = await this.axiosInstance.get<
       R,
       AxiosResponse<IApiResponse<R>>,
       D
-    >(`${this.baseUrl}${endpoint}`, {
-      params: queryParams,
-      headers: headers as AxiosHeaders,
-      signal,
-    });
+    >(`${this.baseUrl}${endpoint}`, config);
 
     return response.data;
   }

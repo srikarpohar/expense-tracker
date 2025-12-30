@@ -1,10 +1,11 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { Activity } from 'react'
+import { Activity, useContext } from 'react'
 import "./login.css";
 import { useMutation } from '@tanstack/react-query';
 import { axiosHttpApiRequestLayer } from '../../../api-layer/base.service';
 import type { LoginUserRequestDto, LoginUserResponseDto } from 'expense-tracker-shared';
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import { AuthContext } from '../../../context/auth/auth.context';
 
 export const Route = createFileRoute('/(auth)/login/')({
   component: LoginComponent,
@@ -16,6 +17,8 @@ interface IState {
 }
 
 function LoginComponent() {
+  const { setUserData } = useContext(AuthContext);
+
   const {
     register,
     handleSubmit,
@@ -31,21 +34,24 @@ function LoginComponent() {
         password: data.password,
       });
 
-      const result: string = await new Promise((resolve) => {
-        setTimeout(() => {
-          console.log("Simulated login response");
-          resolve("jgwafdjsgkj;l");
-          router.navigate({
-            to: "/dashboard",
-          });
-        }, 10000);
-      });
+      // const result: string = await new Promise((resolve) => {
+      //   setTimeout(() => {
+      //     console.log("Simulated login response");
+      //     resolve("jgwafdjsgkj;l");
+      //     router.navigate({
+      //       to: "/dashboard",
+      //     });
+      //   }, 10000);
+      // });
 
-      // TODO: store {{response.data}} (the token) in local storage or context
-      // console.log("Logging in with:", response.data);
-      return result;
+      // Done: store {{response.data}} (the token) in local storage or context
+      console.log("Logging in with:", response.data);
+      setUserData?.(response.data.payload);
+      router.navigate({
+        to: "/dashboard",
+      });
     },
-    onSuccess: (response: string) => {
+    onSuccess: (response: void) => {
       console.log("Login successful", response);
     },
     onError: (error) => {

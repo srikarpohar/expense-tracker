@@ -2,26 +2,38 @@ import type { IUserPayload } from "expense-tracker-shared";
 import { useEffect, useState, type ReactNode } from "react";
 import { axiosHttpApiRequestLayer } from "../../api-layer/base.service";
 import { AuthContext } from "./auth.context";
+import { useQuery } from "@tanstack/react-query";
+import type { IApiResponse } from "../../types/api.types";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userData, setUserData] = useState<IUserPayload | null>(null);
 
   useEffect(() => {
-    axiosHttpApiRequestLayer.get<any, IUserPayload>("/auth/verify-token", {}).then(res => {
-      setUserData(res.data);
-    }).catch(error => {
-      console.log(error);
-      setUserData(null);
-    });
-
-    return () => {
-      console.log("Use abort controller to stop call");
-      setUserData(null);
-    }
+    console.log("auth provider use effect");
   }, []);
 
+  const verifyTokenQuery = useQuery({
+    queryKey: ["verify-token"],
+    queryFn: async () => {
+      let abortController = new AbortController();
+      try {
+        const response = await axiosHttpApiRequestLayer.get<any, IUserPayload>("/auth/verify-token", {}, {});
+        setUserData(response.data);
+      } catch(error: any) {
+        console.log(`Error while verifying token: ${error.message}`);
+        setUserData(null);
+      }
+    },
+  });
+
+  if(verifyTokenQuery.status == "pending") {
+    return (
+      <div>Checking if user has logged in....</div>
+    )
+  }
+
   return (
-    <AuthContext.Provider value={{userData}}>
+    <AuthContext.Provider value={{userData, setUserData}}>
         {children}
     </AuthContext.Provider>
   );
