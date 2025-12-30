@@ -5,3 +5,10 @@ export enum UserVerificationStatus {
     OTP_RESENT = "OTP_RESENT",
     FAILED = "FAILED"
 }
+
+export enum RecurringExpenseFrequency {
+    DAY = "day",
+    MONTH = "month",
+    WEEK = "week",
+    YEAR = "year"
+}
