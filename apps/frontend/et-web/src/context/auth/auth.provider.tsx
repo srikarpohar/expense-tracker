@@ -3,7 +3,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { axiosHttpApiRequestLayer } from "../../api-layer/base.service";
 import { AuthContext } from "./auth.context";
 import { useQuery } from "@tanstack/react-query";
-import type { IApiResponse } from "../../types/api.types";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userData, setUserData] = useState<IUserPayload | null>(null);
@@ -19,9 +18,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const response = await axiosHttpApiRequestLayer.get<any, IUserPayload>("/auth/verify-token", {}, {});
         setUserData(response.data);
+        return response.data;
       } catch(error: any) {
         console.log(`Error while verifying token: ${error.message}`);
         setUserData(null);
+        return null;
       }
     },
   });

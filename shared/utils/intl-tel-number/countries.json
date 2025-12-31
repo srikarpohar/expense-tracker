@@ -1,0 +1,58 @@
+[
+  { "code": "IN", "name": "India", "phoneCode": "+91", "currency": "INR" },
+  { "code": "US", "name": "United States", "phoneCode": "+1", "currency": "USD" },
+  { "code": "CA", "name": "Canada", "phoneCode": "+1", "currency": "CAD" },
+  { "code": "GB", "name": "United Kingdom", "phoneCode": "+44", "currency": "GBP" },
+  { "code": "AU", "name": "Australia", "phoneCode": "+61", "currency": "AUD" },
+  { "code": "DE", "name": "Germany", "phoneCode": "+49", "currency": "EUR" },
+  { "code": "FR", "name": "France", "phoneCode": "+33", "currency": "EUR" },
+  { "code": "IT", "name": "Italy", "phoneCode": "+39", "currency": "EUR" },
+  { "code": "ES", "name": "Spain", "phoneCode": "+34", "currency": "EUR" },
+  { "code": "NL", "name": "Netherlands", "phoneCode": "+31", "currency": "EUR" },
+  { "code": "SE", "name": "Sweden", "phoneCode": "+46", "currency": "SEK" },
+  { "code": "NO", "name": "Norway", "phoneCode": "+47", "currency": "NOK" },
+  { "code": "DK", "name": "Denmark", "phoneCode": "+45", "currency": "DKK" },
+  { "code": "FI", "name": "Finland", "phoneCode": "+358", "currency": "EUR" },
+
+  { "code": "AE", "name": "United Arab Emirates", "phoneCode": "+971", "currency": "AED" },
+  { "code": "SA", "name": "Saudi Arabia", "phoneCode": "+966", "currency": "SAR" },
+  { "code": "QA", "name": "Qatar", "phoneCode": "+974", "currency": "QAR" },
+  { "code": "KW", "name": "Kuwait", "phoneCode": "+965", "currency": "KWD" },
+
+  { "code": "SG", "name": "Singapore", "phoneCode": "+65", "currency": "SGD" },
+  { "code": "MY", "name": "Malaysia", "phoneCode": "+60", "currency": "MYR" },
+  { "code": "TH", "name": "Thailand", "phoneCode": "+66", "currency": "THB" },
+  { "code": "ID", "name": "Indonesia", "phoneCode": "+62", "currency": "IDR" },
+  { "code": "PH", "name": "Philippines", "phoneCode": "+63", "currency": "PHP" },
+  { "code": "VN", "name": "Vietnam", "phoneCode": "+84", "currency": "VND" },
+
+  { "code": "JP", "name": "Japan", "phoneCode": "+81", "currency": "JPY" },
+  { "code": "KR", "name": "South Korea", "phoneCode": "+82", "currency": "KRW" },
+  { "code": "CN", "name": "China", "phoneCode": "+86", "currency": "CNY" },
+  { "code": "HK", "name": "Hong Kong", "phoneCode": "+852", "currency": "HKD" },
+  { "code": "TW", "name": "Taiwan", "phoneCode": "+886", "currency": "TWD" },
+
+  { "code": "BR", "name": "Brazil", "phoneCode": "+55", "currency": "BRL" },
+  { "code": "AR", "name": "Argentina", "phoneCode": "+54", "currency": "ARS" },
+  { "code": "CL", "name": "Chile", "phoneCode": "+56", "currency": "CLP" },
+  { "code": "CO", "name": "Colombia", "phoneCode": "+57", "currency": "COP" },
+  { "code": "MX", "name": "Mexico", "phoneCode": "+52", "currency": "MXN" },
+
+  { "code": "ZA", "name": "South Africa", "phoneCode": "+27", "currency": "ZAR" },
+  { "code": "NG", "name": "Nigeria", "phoneCode": "+234", "currency": "NGN" },
+  { "code": "KE", "name": "Kenya", "phoneCode": "+254", "currency": "KES" },
+  { "code": "EG", "name": "Egypt", "phoneCode": "+20", "currency": "EGP" },
+
+  { "code": "RU", "name": "Russia", "phoneCode": "+7", "currency": "RUB" },
+  { "code": "UA", "name": "Ukraine", "phoneCode": "+380", "currency": "UAH" },
+  { "code": "PL", "name": "Poland", "phoneCode": "+48", "currency": "PLN" },
+  { "code": "CZ", "name": "Czech Republic", "phoneCode": "+420", "currency": "CZK" },
+  { "code": "HU", "name": "Hungary", "phoneCode": "+36", "currency": "HUF" },
+
+  { "code": "IL", "name": "Israel", "phoneCode": "+972", "currency": "ILS" },
+  { "code": "TR", "name": "Turkey", "phoneCode": "+90", "currency": "TRY" },
+  { "code": "PK", "name": "Pakistan", "phoneCode": "+92", "currency": "PKR" },
+  { "code": "BD", "name": "Bangladesh", "phoneCode": "+880", "currency": "BDT" },
+  { "code": "LK", "name": "Sri Lanka", "phoneCode": "+94", "currency": "LKR" },
+  { "code": "NP", "name": "Nepal", "phoneCode": "+977", "currency": "NPR" }
+]

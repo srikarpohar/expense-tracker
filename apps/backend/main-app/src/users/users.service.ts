@@ -1,5 +1,5 @@
-import { Inject, Injectable } from "@nestjs/common";
-import {IUser} from "expense-tracker-shared";
+import { BadRequestException, HttpStatus, Inject, Injectable } from "@nestjs/common";
+import {isValidPhoneNumber, IUser} from "expense-tracker-shared";
 import bcrypt from "bcryptjs";
 import postgres from "postgres";
 import { PgDatabaseConnectionService } from "src/shared/database/db.connection";
@@ -19,6 +19,18 @@ export class UsersService {
         return {
             sub: userData.user_id as number,
             username: userData.username
+        }
+    }
+
+    validateUserPhoneNumber(phone_number: string, country_code: any) {
+        try {
+            isValidPhoneNumber(phone_number, country_code);
+        } catch(error: any) {
+            throw new BadRequestException({
+                status: HttpStatus.BAD_REQUEST,
+                data: null,
+                message: error.message
+            })
         }
     }
 

@@ -1,18 +1,16 @@
 import { ConflictException, HttpStatus, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { UsersService } from "src/users/users.service";
 import {JwtService} from "@nestjs/jwt";
-import {IUser, IUserPayload, SignUpUserRequestDto} from "expense-tracker-shared";
+import { IUser, IUserPayload, SignUpUserRequestDto} from "expense-tracker-shared";
 import { AuthenticatorRegistry, AuthenticatorTypes } from "./providers/authenticator";
 import { OTPAuthenticator } from "./providers/otp-authenticator";
 import { UserVerificationsService } from "src/users/user_verifications/user_verifications.service";
 import { ConfigService } from "@nestjs/config";
-// import { OTPAuthenticator } from "./providers/otp-authenticator";
 
 @Injectable()
 export class AuthService {
     @Inject()
     private readonly usersService: UsersService;
-
 
     constructor(
         private readonly configService: ConfigService,
@@ -23,6 +21,7 @@ export class AuthService {
     }
 
     async signUpUser(provider: AuthenticatorTypes, data: SignUpUserRequestDto): Promise<string> {
+        this.usersService.validateUserPhoneNumber(data.phone_number, data.country_code);
         const user: IUser = await this.usersService.findUserByField("phone_number", data.phone_number) as IUser;
         if(user) {
             throw new ConflictException({

@@ -8,6 +8,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "libphonenumber-js": "^1.12.33",
     "typescript": "^5.9.3"
   },
   "keywords": [],

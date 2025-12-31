@@ -15,8 +15,9 @@ for (const k in process.env) {
 
 esbuild
   .build({
-    entryPoints: ["src/index.*"],
+    entryPoints: ["src/index.tsx"],
     outdir: "build/dist",
+    jsx: "transform",
     bundle: true, // Enable bundling
     format: "esm", // Enable ES Modules
     minify: true, // Minify the output for production
