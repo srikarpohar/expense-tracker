@@ -25,7 +25,7 @@ export const up = (pgm) => {
             phone_number VARCHAR(20) UNIQUE NOT NULL,
             password TEXT NOT NULL,
             username VARCHAR(200) UNIQUE NOT NULL,
-            profile_pic_id INT,
+            profile_pic_id INT DEFAULT NULL,
             created_at TIMESTAMP NOT NULL DEFAULT NOW(),
             deleted_at TIMESTAMP DEFAULT NULL,
             PRIMARY KEY(user_id),
@@ -60,41 +60,41 @@ export const up = (pgm) => {
         );
 
         CREATE TABLE IF NOT EXISTS expense_category (
-            expense_cat_id INT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+            id INT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
             name VARCHAR(100) NOT NULL UNIQUE,
-            thumbnail_url VARCHAR(200),
-            description VARCHAR(200)
+            thumbnail_id INT DEFAULT NULL,
+            description VARCHAR(200),
+            CONSTRAINT fk_thumbnail_id
+                FOREIGN KEY(thumbnail_id)
+                REFERENCES attachments(attachment_id)
+                ON DELETE SET NULL
         );
 
         CREATE TYPE recurring_expense_freq AS ENUM('day', 'month', 'week', 'year');
 
+        CREATE TYPE expense_type AS ENUM('Debit', 'Credit');
+
         CREATE TABLE IF NOT EXISTS expense (
             expense_id BIGINT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+            user_id INT NOT NULL,
             name VARCHAR(150) NOT NULL,
-            category_id INT,
-            description VARCHAR(300),
+            category_id INT NOT NULL,
+            notes VARCHAR(300),
             amount NUMERIC CHECK(amount > 0),
             currency CHAR(1) NOT NULL,
-            paid_on TIMESTAMP NOT NULL,
-            created_by INT NOT NULL,
             recurring_frequency recurring_expense_freq,
             bill_image_url VARCHAR(200),
+
+            type expense_type NOT NULL,
+
+            created_at TIMESTAMP DEFAULT NOW(),
+            created_by INT NOT NULL,
             deleted_at TIMESTAMP DEFAULT NULL,
-            CONSTRAINT fk_cat_id FOREIGN KEY(category_id) REFERENCES expense_category(expense_cat_id) ON DELETE RESTRICT,
-            CONSTRAINT fk_user_id FOREIGN KEY(created_by) REFERENCES users(user_id) ON DELETE RESTRICT
-        );
+            
+            paid_on TIMESTAMP,
 
-        CREATE TYPE user_transaction_type AS ENUM('Debit', 'Credit');
-
-        CREATE TABLE IF NOT EXISTS user_transactions (
-            user_expense_id BIGINT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
-            user_id INT NOT NULL,
-            expense_id BIGINT NOT NULL,
-            is_recurring_expense BOOLEAN DEFAULT false,
-            transaction_type user_transaction_type NOT NULL,
-            amount NUMERIC CHECK(amount > 0),
-            CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE RESTRICT,
-            CONSTRAINT fk_expense_id FOREIGN KEY(expense_id) REFERENCES expense(expense_id) ON DELETE RESTRICT
+            CONSTRAINT fk_cat_id FOREIGN KEY(category_id) REFERENCES expense_category(id) ON DELETE RESTRICT,
+            CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE RESTRICT
         );
 
         CREATE TYPE expense_actions AS ENUM('AMOUNT_ADDED', 'AMOUNT_UPDATED', 'CURRENCY_CHANGED', 'EXPENSE_TYPE_UPDATED', 'ITEMS_ADDED', 'PAID', 'EXPENSE_DELETED');
@@ -120,7 +120,17 @@ export const up = (pgm) => {
 export const down = (pgm) => {
     pgm.sql(`
         DROP TABLE IF EXISTS attachments, users, user_devices, expense_category, expense, user_transactions, user_signup_verifications, expense_history CASCADE;
+        DROP TYPE IF EXISTS device_type, recurring_expense_freq, expense_type, user_signup_verification_status, expense_actions;
     `)
 };
-        // DROP TYPE IF EXISTS device_type, recurring_expense_freq, user_transaction_type, user_signup_verification_status;
 
+// CREATE TABLE IF NOT EXISTS user_transactions (
+//             user_expense_id BIGINT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+//             user_id INT NOT NULL,
+//             expense_id BIGINT NOT NULL,
+//             is_recurring_expense BOOLEAN DEFAULT false,
+//             transaction_type expense_type NOT NULL,
+//             amount NUMERIC CHECK(amount > 0),
+//             CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE RESTRICT,
+//             CONSTRAINT fk_expense_id FOREIGN KEY(expense_id) REFERENCES expense(expense_id) ON DELETE RESTRICT
+//         );

@@ -1,0 +1,6 @@
+export interface IAttachment {
+    attachment_id?: number;
+    name: string;
+    url?: string;
+    type: string;
+}

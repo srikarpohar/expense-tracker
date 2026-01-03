@@ -1,3 +1,5 @@
+import { IAttachment } from "../../common/models";
+
 export interface IUser {
     user_id?: number;
     username: string;
@@ -6,11 +8,11 @@ export interface IUser {
     password: string;
     
     email: string;
-    profilePicUrl?: string;
+    profile_pic_id?: number | IAttachment;
     preferences?: Record<string, any>;
 }
 
 export interface IUserPayload {
-    sub: IUser["user_id"],
+    sub: number,
     username: IUser["username"]   
 }
