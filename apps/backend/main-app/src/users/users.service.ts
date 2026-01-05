@@ -58,4 +58,12 @@ export class UsersService {
         `;
         return result.length > 0 ? result[0] as IUser : null;
     }
+
+    async updateUserProfilePic(user_id: number, profile_pic_id: string) {
+        await this.dbConnection.sqlInstance`
+            UPDATE TABLE users SET profile_pic_id = ${profile_pic_id} WHERE user_id = ${user_id}
+        `;
+
+        return true;
+    }
 }

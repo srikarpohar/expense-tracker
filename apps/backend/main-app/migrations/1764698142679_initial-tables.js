@@ -97,10 +97,10 @@ export const up = (pgm) => {
             CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE RESTRICT
         );
 
-        CREATE TYPE expense_actions AS ENUM('AMOUNT_ADDED', 'AMOUNT_UPDATED', 'CURRENCY_CHANGED', 'EXPENSE_TYPE_UPDATED', 'ITEMS_ADDED', 'PAID', 'EXPENSE_DELETED');
+        CREATE TYPE expense_actions AS ENUM('CREATED', 'AMOUNT_UPDATED', 'CURRENCY_UPDATED', 'TYPE_UPDATED', 'ITEMS_LIST_UPDATED', 'PAID', 'DELETED');
 
         CREATE TABLE IF NOT EXISTS expense_history (
-            log_id BIGINT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+            log_id INT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
             expense_id BIGINT NOT NULL,
             action expense_actions NOT NULL,
             action_done_on TIMESTAMP NOT NULL DEFAULT NOW(),

@@ -1,23 +1,18 @@
 import { IUser } from "../../auth/models";
-import { RecurringExpenseFrequency } from "../../enums";
-
-export interface IExpenseCategory {
-    expense_cat_id?: number;
-    name: string;
-    thumbnail_url?: string;
-    description: string;
-}
+import { ExpenseType, RecurringExpenseFrequency } from "../../enums";
+import { IExpenseCategory } from "./expense-catgeory.model";
 
 export interface IExpense {
     expense_id?: number;
+    user_id: number | IUser;
     name: string;
     category_id: number | IExpenseCategory;
-    description: string;
+    notes: string;
     amount: number;
     currency: string;
-    created_on: Date;
+    type: ExpenseType;
+    created_at?: Date;
     paid_on?: Date;
-    created_by: number | IUser;
     recurring_frequency?: RecurringExpenseFrequency;
     bill_image_url?: string;
     deleted_at?: Date;

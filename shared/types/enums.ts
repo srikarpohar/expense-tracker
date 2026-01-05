@@ -6,6 +6,21 @@ export enum UserVerificationStatus {
     FAILED = "FAILED"
 }
 
+export enum ExpenseType {
+    CREDIT = "Credit",
+    DEBIT = "Debit"
+}
+
+export enum ExpenseLogActions {
+    CREATED = "CREATED",
+    AMOUNT_UPDATED = "AMOUNT_UPDATED",
+    CURRENCY_UPDATED = "CURRENCY_UPDATED",
+    TYPE_UPDATED = "TYPE_UPDATED",
+    ITEMS_LIST_UPDATED = "ITEMS_LIST_UPDATED",
+    PAID = "PAID",
+    DELETED = "DELETED"
+}
+
 export enum RecurringExpenseFrequency {
     DAY = "day",
     MONTH = "month",
