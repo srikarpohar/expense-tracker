@@ -57,11 +57,13 @@ export class AuthController {
             body.username, 
             body.password
         );
-
+        
+        const expiryDuration = (this.configService.get<number>("jwt.expiresIn") || 600) * 1000;
         res.cookie("authorization_token", token, {
-            maxAge: (this.configService.get<number>("jwt.expiresIn") || 600) * 1000,
+            maxAge: expiryDuration,
             httpOnly: true,
-            secure: true,
+            sameSite: "none",
+            secure: true
         })
         res.status(201).send({
             data: {

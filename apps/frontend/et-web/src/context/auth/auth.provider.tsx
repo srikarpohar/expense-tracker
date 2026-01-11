@@ -1,4 +1,4 @@
-import type { IUserPayload } from "expense-tracker-shared";
+import type { IUserPayload, VerifyTokenResponseDTO } from "expense-tracker-shared";
 import { useEffect, useState, type ReactNode } from "react";
 import { axiosHttpApiRequestLayer } from "../../api-layer/base.service";
 import { AuthContext } from "./auth.context";
@@ -16,8 +16,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryFn: async () => {
       let abortController = new AbortController();
       try {
-        const response = await axiosHttpApiRequestLayer.get<any, IUserPayload>("/auth/verify-token", {}, {});
-        setUserData(response.data);
+        const response = await axiosHttpApiRequestLayer.get<any, VerifyTokenResponseDTO>("/auth/verify-token", {}, {});
+        setUserData({
+          sub: response.data.payload.sub,
+          username: response.data.payload.username
+        });
         return response.data;
       } catch(error: any) {
         console.log(`Error while verifying token: ${error.message}`);

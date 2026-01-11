@@ -61,7 +61,8 @@ export class AuthService {
         try {
             const payload = await this.jwtService.verifyAsync<IUserPayload>(token);
             return payload;
-        } catch {
+        } catch(error) {
+            console.log(error);
              throw new UnauthorizedException({
                 statusCode: HttpStatus.UNAUTHORIZED,
                 data: null,

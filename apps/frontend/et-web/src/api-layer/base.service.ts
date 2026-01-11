@@ -38,6 +38,7 @@ export class AxiosHttpApiRequestLayer implements IHTTPClient {
     let config: AxiosRequestConfig = {
       params: queryParams,
       headers: headers as AxiosHeaders,
+      withCredentials: true,
     };
 
     if (abortSignal) {
