@@ -1,4 +1,4 @@
-import { isValidCountry } from "./countries";
+import { getCountryByCode, isValidCountry } from "./countries";
 import parsePhoneNumber, { type CountryCode} from 'libphonenumber-js/mobile';
 
 /**
@@ -11,11 +11,12 @@ import parsePhoneNumber, { type CountryCode} from 'libphonenumber-js/mobile';
  * @throws Error if invalid
  */
 export const isValidPhoneNumber = (phoneNumber: string, countryCode: CountryCode) => {
-    if(!isValidCountry(countryCode)) {
+    const country = getCountryByCode(countryCode);
+    if(!country) {
         throw new Error("Invalid Country code given");
     }
 
-    const parsedPhoneNumber = parsePhoneNumber(phoneNumber, {
+    const parsedPhoneNumber = parsePhoneNumber(`${country.phoneCode}${phoneNumber}`, {
         defaultCountry: countryCode
     });
 
@@ -29,15 +30,16 @@ export const isValidPhoneNumber = (phoneNumber: string, countryCode: CountryCode
     return true;
 }
 
+/*
+  format phone number in default extension format along with country code.
+*/
 export const formatPhoneNumber = (phoneNumber: string, countryCode: CountryCode): string => {
     try {
-        if(isValidPhoneNumber(phoneNumber, countryCode)) {
-            const parsedPhoneNumber = parsePhoneNumber(phoneNumber, {
-                defaultCountry: countryCode
-            });
+        const parsedPhoneNumber = parsePhoneNumber(phoneNumber, {
+            defaultCountry: countryCode
+        });
 
-            return parsedPhoneNumber?.format("E.164") ?? "";
-        }
+        return parsedPhoneNumber?.format("E.164") ?? "";
     } catch {
         return "";
     } finally {

@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { Activity, useMemo } from 'react';
-import { type SignUpUserRequestDto, type IUser, type SignUpUserResponseDto, UserVerificationStatus, isValidPhoneNumber, getCountries, formatPhoneNumber } from 'expense-tracker-shared';
+import { type SignUpUserRequestDto, type IUser, type SignUpUserResponseDto, UserVerificationStatus, isValidPhoneNumber, getCountries } from 'expense-tracker-shared';
 import './signup.css';
 import { useMutation } from '@tanstack/react-query';
 import { axiosHttpApiRequestLayer } from '../../../api-layer/base.service';
@@ -31,7 +31,7 @@ function SignupComponent() {
         username: data.username,
         password: data.password,
         country_code: data.country_code,
-        phone_number: formatPhoneNumber(data.phone_number, data.country_code as any),
+        phone_number: data.phone_number,
         profilePic: data.profilePic as File
       });
 
@@ -51,8 +51,7 @@ function SignupComponent() {
   })
 
   const onSubmitForm: SubmitHandler<IState> = (data) => {
-    console.log(data);
-    // signupMutation.mutate(data);
+    signupMutation.mutate(data);
   }
 
   const checkPasswordMatch = (value: string) => {

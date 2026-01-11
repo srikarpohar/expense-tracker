@@ -45,7 +45,7 @@ export const up = (pgm) => {
             updated_at TIMESTAMP DEFAULT NOW(),
             no_of_attempts INT DEFAULT 0,
             PRIMARY KEY(verification_id),
-            CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(user_id)
+            CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
         
         CREATE TYPE device_type AS ENUM('Android phone', 'Tablet', 'IOS Phone', 'Web browser');

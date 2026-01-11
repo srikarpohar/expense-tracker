@@ -84,8 +84,8 @@ export class AuthService {
             })
         }
 
-        const encryptedPassword = await this.usersService.encryptData(password);
-        if(encryptedPassword != userData.password) {
+        const passwordMatch = await this.usersService.comparePassword(password, userData.password);
+        if(!passwordMatch) {
             throw new UnauthorizedException({
                 statusCode: HttpStatus.UNAUTHORIZED,
                 data: "password",
@@ -94,7 +94,7 @@ export class AuthService {
         }
 
         // User is authenticated. Create a jwt token and send it to client.
-        const payload = this.usersService.getJwtPayload(userData);
+        const payload: IUserPayload = this.usersService.getJwtPayload(userData);
         const jwtToken = await this.jwtService.signAsync<IUserPayload>(payload);
 
         return {payload, token: jwtToken};

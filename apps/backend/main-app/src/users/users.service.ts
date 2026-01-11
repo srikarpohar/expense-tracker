@@ -26,6 +26,7 @@ export class UsersService {
         try {
             isValidPhoneNumber(phone_number, country_code);
         } catch(error: any) {
+            console.log(error);
             throw new BadRequestException({
                 status: HttpStatus.BAD_REQUEST,
                 data: null,
@@ -34,7 +35,7 @@ export class UsersService {
         }
     }
 
-    async encryptData(data: string): Promise<string> {
+    async encryptPassword(data: string): Promise<string> {
         const saltRounds = this.configService.get<number>('password_salt') || 10;
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedData = await bcrypt.hash(data, salt);
@@ -42,8 +43,13 @@ export class UsersService {
         return hashedData;
     }
 
+    async comparePassword(password: string, hashed_password: string) {
+        const match = await bcrypt.compare(password, hashed_password);
+        return match;
+    }
+
     async create(user: IUser): Promise<postgres.Row | undefined> {
-        user.password = await this.encryptData(user.password);
+        user.password = await this.encryptPassword(user.password);
         const createdUser = await this.dbConnection.sqlInstance`
             INSERT INTO users
             ${this.dbConnection.sqlInstance(user, ['username', 'email', 'password', 'phone_number', 'country_code'])}
@@ -54,7 +60,7 @@ export class UsersService {
 
     async findUserByField(field: string, value: string): Promise<IUser | null> {
         const result = await this.dbConnection.sqlInstance`
-            SELECT user_id FROM users WHERE ${this.dbConnection.sqlInstance(field)} = ${value} LIMIT 1;
+            SELECT * FROM users WHERE ${this.dbConnection.sqlInstance(field)} = ${value} LIMIT 1;
         `;
         return result.length > 0 ? result[0] as IUser : null;
     }
