@@ -62,8 +62,8 @@ export class AuthController {
         res.cookie("authorization_token", token, {
             maxAge: expiryDuration,
             httpOnly: true,
-            sameSite: "none",
-            secure: true
+            sameSite: this.configService.get<string>("environment") == "dev" ? "lax" : "none",
+            secure: this.configService.get<string>("environment") == "dev" ? false : true
         })
         res.status(201).send({
             data: {

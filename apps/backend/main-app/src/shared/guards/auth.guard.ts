@@ -33,9 +33,4 @@ export class AuthGaurd implements CanActivate {
 
         return true;
     }
-
-    // private extractTokenFromHeader(request: Request): string | undefined {
-    //     const token = request.cookies["authorization_token"] || "";
-    //     return token as string;
-    // }
 }

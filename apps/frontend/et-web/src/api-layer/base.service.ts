@@ -98,6 +98,7 @@ export class AxiosHttpApiRequestLayer implements IHTTPClient {
       >(`${this.baseUrl}${endpoint}`, data, {
         method: "POST",
         headers: headers as AxiosHeaders,
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {

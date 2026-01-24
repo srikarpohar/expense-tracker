@@ -1,4 +1,4 @@
-import { ConflictException, HttpStatus, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { UsersService } from "src/users/users.service";
 import {JwtService} from "@nestjs/jwt";
 import { IUser, IUserPayload, SignUpUserRequestDto} from "expense-tracker-shared";
@@ -30,11 +30,16 @@ export class AuthService {
                 errorMessage: "User with this phone number already exists"
             });
         }
-
+        
+        // TODO: Use transactions to create user, send otp and then create verification row. Rollback even if one step fails.
         // create the user.
         const userRow = await this.usersService.create(data);
         if(!userRow) {
-            throw new InternalServerErrorException("Failed to create user row.");
+            throw new InternalServerErrorException({
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                data: null,
+                errorMessage: "An unexpected error occurred. Please try again later."
+            });
         }
 
         let verification_id = "123"; // In real scenario, this would be the id returned by the OTP service.
@@ -59,13 +64,18 @@ export class AuthService {
 
     async verifyToken(token: string): Promise<IUserPayload> {
         try {
-            const payload = await this.jwtService.verifyAsync<IUserPayload>(token);
+            const payload = await this.jwtService.verifyAsync<IUserPayload>(token, {
+                secret: this.configService.get<string>('jwt.secret'),
+                algorithms: ["HS256"],
+            });
             return payload;
         } catch(error) {
             console.log(error);
-             throw new UnauthorizedException({
+            throw new UnauthorizedException({
                 statusCode: HttpStatus.UNAUTHORIZED,
-                data: null,
+                data: {
+                    retry: true
+                },
                 errorMessage: "Token got revoked. Please login again!"
             });
         }
@@ -78,19 +88,19 @@ export class AuthService {
         );
 
         if(!userData) {
-            throw new UnauthorizedException({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                data: "username",
-                errorMessage: "Invalid email/username."
+            throw new BadRequestException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                data: null,
+                errorMessage: "Invalid credentials"
             })
         }
 
         const passwordMatch = await this.usersService.comparePassword(password, userData.password);
         if(!passwordMatch) {
-            throw new UnauthorizedException({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                data: "password",
-                errorMessage: "Invalid password."
+            throw new BadRequestException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                data: null,
+                errorMessage: "Invalid credentials"
             })
         }
 

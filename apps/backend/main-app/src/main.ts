@@ -9,8 +9,8 @@ async function bootstrap() {
   app.enableCors({
     origin: "http://localhost:4200",
     credentials: true,
-    allowedHeaders: "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, credentials",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   });
   app.useBodyParser('json');
   app.use(cookieParser());
