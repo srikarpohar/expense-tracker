@@ -1,6 +1,6 @@
 import { getDaysInMonth } from 'expense-tracker-shared';
 import * as React from 'react';
-import "./index.css";
+import "./calendar.css";
 import CalendarCell from './cell';
 
 export const MONTHS = [

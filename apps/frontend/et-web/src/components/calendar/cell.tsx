@@ -1,4 +1,4 @@
-import "./index.css";
+import "./calendar.css";
 
 type ICalendarCellProps = {
     date: string,
