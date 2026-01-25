@@ -1,0 +1,42 @@
+@keyframes header-icon-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(-90deg);
+    }
+}
+
+@keyframes header-icon-rotate-back {
+    0% {
+        transform: rotate(-90deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+} 
+
+.list-header {
+  height: "100%";
+  max-height: 100px;
+}
+
+.list-expand-animation {
+  max-height: 100px;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out 0.1s, max-height 0.5s ease-in-out;
+}
+
+.list-collapse-animation {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.5s ease-in-out 0.1s, opacity 0.5s ease-in-out;
+}
+
+.header-icon-rotate-animation {
+    animation: header-icon-rotate 0.5s ease-in-out 0s 1 normal forwards;
+}
+
+.header-icon-rotate-back-animation {
+    animation: header-icon-rotate-back 0.5s ease-in-out 0s 1 normal forwards;
+}
