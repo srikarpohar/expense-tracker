@@ -6,11 +6,15 @@ import { AuthenticatorRegistry, AuthenticatorTypes } from "./providers/authentic
 import { OTPAuthenticator } from "./providers/otp-authenticator";
 import { UserVerificationsService } from "src/users/user_verifications/user_verifications.service";
 import { ConfigService } from "@nestjs/config";
+import { LoggerService } from "src/shared/logger/logger.service";
 
 @Injectable()
 export class AuthService {
     @Inject()
     private readonly usersService: UsersService;
+
+    @Inject()
+    private readonly logger: LoggerService;
 
     constructor(
         private readonly configService: ConfigService,
@@ -70,7 +74,7 @@ export class AuthService {
             });
             return payload;
         } catch(error) {
-            console.log(error);
+            this.logger.error(error.message as string);
             throw new UnauthorizedException({
                 statusCode: HttpStatus.UNAUTHORIZED,
                 data: {

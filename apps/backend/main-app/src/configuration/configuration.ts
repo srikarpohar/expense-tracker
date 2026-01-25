@@ -2,6 +2,7 @@ export default () => {
 
     return {
         environment: process.env.NODE_ENV,
+        logsPath: process.env.LOGS_PATH,
         jwt: {
             secret: process.env.JWT_SECRET || 'pirates-dreams-never-die',
             expiresIn: process.env.JWT_EXPIRATION_INTERVAL || 600
