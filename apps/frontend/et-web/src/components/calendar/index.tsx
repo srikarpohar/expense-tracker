@@ -75,7 +75,8 @@ function Calendar(props: ICalendarProps) {
     
     // TODO: Convert cell into seperate component.
     return (
-      <div className={`calendar-row grid-rows-[50px] auto-rows-fr rounded-xl w-full h-full`}>
+      <div className={`calendar-row grid-rows-(--tw-rows) auto-rows-fr rounded-xl w-full h-full`}
+        style={{"--tw-rows": `50px repeat(${rows}, minmax(0, 1fr))`} as React.CSSProperties}>
         {WEEK.map((week, index) => (
         <div className='row-start-1 date-container p-2 flex justify-center items-center' key={"week0day" + index}>
             <CalendarCell date={week.substring(0, 3)} isHeader>
