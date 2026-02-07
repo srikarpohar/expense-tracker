@@ -82,6 +82,18 @@ pnpm add -D typescript esbuild live-server concurrently @types/react @types/reac
 touch esbuild.config.mjs
 
 import esbuild from 'esbuild';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
+
+// Prepare the define object for esbuild
+const define = {};
+for (const k in process.env) {
+  // Stringify all values to be inlined as string literals in the bundled code
+  define[`process.env.${k}`] = JSON.stringify(process.env[k]);
+}
+
 
 esbuild.build({
   entryPoints: ['src/index.*'],
@@ -107,6 +119,8 @@ esbuild.build({
   console.log('Build complete.');
 }).catch(() => process.exit(1));
 ```
+
+**Note**: Use `esbuild-server` for features like live reload, SPA support through History API fallback in local development. Refer `build/esbuild.config.dev.mjs`.
 
 9. Create sample code in index.html. This is the entry point where our React app will be injected. The div with id="root" is where the React component tree will be mounted.
 
