@@ -3,3 +3,6 @@ packages:
   - "apps/backend/*"
   - "apps/frontend/*"
   - "shared/*"
+syncInjectedDepsAfterScripts:
+  - build
+injectWorkspacePackages: true

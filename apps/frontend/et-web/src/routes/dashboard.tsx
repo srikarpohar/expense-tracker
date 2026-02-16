@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useContext, useState, Activity } from 'react';
+import { useEffect, useContext, useState, Activity, useRef } from 'react';
 import { AuthContext } from '../context/auth/auth.context';
 import { CaretLeftIcon, PlusIcon } from "@phosphor-icons/react";
 import CalendarHeader from '../components/calendar/header';
@@ -7,6 +7,7 @@ import Calendar from '../components/calendar';
 import type { AccordionData } from '../components/accordion';
 import Accordion from '../components/accordion';
 import './dashboard.css';
+import Dialog, { type DialogRef } from '../components/dialog';
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent
@@ -81,6 +82,8 @@ function RouteComponent() {
   // Dummy data for accordion
   const [accordionData, setAccordionData] = useState<AccordionData[]>(dummyAccordionData);
 
+  const dialogRef = useRef<DialogRef>(null);
+
   useEffect(() => {
     console.log("use effect");
 
@@ -139,7 +142,8 @@ function RouteComponent() {
       <section className='row-span-1 col-span-1 flex justify-between items-center mb-2 p-2'>
         <CalendarHeader date={currDate} onPrevMonthClick={onPrevMonthClick} onNextMonthClick={onNextMonthClick} />
 
-        <button className='p-2 flex justify-between items-center gap-2 bg-blue-500 text-white rounded-md cursor-pointer'>
+        <button className='p-2 flex justify-between items-center gap-2 bg-blue-500 text-white rounded-md cursor-pointer'
+          onClick={() => dialogRef.current?.open()}>
           <PlusIcon size={20} weight="bold"/>
           Add Expense
         </button>
@@ -150,6 +154,10 @@ function RouteComponent() {
           <p>Calendar component</p>
         </Calendar>
       </section>
+
+      <Dialog ref={dialogRef} title="Sample Dialog" isOpen={false} onClose={() => {}}>
+        <p>This is a sample dialog content.</p>
+      </Dialog>
 
       <footer className='row-span-1 col-span-1 flex justify-center items-center'>
         <p>Footer section</p>

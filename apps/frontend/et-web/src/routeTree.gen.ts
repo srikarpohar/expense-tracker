@@ -31,8 +31,8 @@ const authLoginIndexRoute = authLoginIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
-  '/login': typeof authLoginIndexRoute
-  '/signup': typeof authSignupIndexRoute
+  '/login/': typeof authLoginIndexRoute
+  '/signup/': typeof authSignupIndexRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
@@ -47,7 +47,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/login' | '/signup'
+  fullPaths: '/dashboard' | '/login/' | '/signup/'
   fileRoutesByTo: FileRoutesByTo
   to: '/dashboard' | '/login' | '/signup'
   id: '__root__' | '/dashboard' | '/(auth)/login/' | '/(auth)/signup/'
@@ -71,14 +71,14 @@ declare module '@tanstack/react-router' {
     '/(auth)/signup/': {
       id: '/(auth)/signup/'
       path: '/signup'
-      fullPath: '/signup'
+      fullPath: '/signup/'
       preLoaderRoute: typeof authSignupIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/login/': {
       id: '/(auth)/login/'
       path: '/login'
-      fullPath: '/login'
+      fullPath: '/login/'
       preLoaderRoute: typeof authLoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

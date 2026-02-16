@@ -1,4 +1,4 @@
-import { ExpenseType, RecurringExpenseFrequency } from "types/enums";
+import { ExpenseType, RecurringExpenseFrequency } from "../../enums";
 
 export type AddExpenseRequestDto = {
     name: string,

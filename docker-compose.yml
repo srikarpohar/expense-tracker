@@ -1,0 +1,34 @@
+name: expense-tracker
+services:
+  shared:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: shared-build
+
+  # backend:
+  #   ports:
+  #     - "3000:3000"
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     target: backend-build
+  #   depends_on:
+  #     - shared
+
+  frontend:
+    ports:
+      - "4200:4200"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend-build
+    stdin_open: true
+    volumes:
+      - type: bind
+        source: ./apps/frontend/et-web
+        target: /app/apps/frontend/et-web
+      - /app/apps/frontend/et-web/node_modules
+      - type: bind
+        source: ./shared/src
+        target: /app/shared/src

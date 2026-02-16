@@ -1,0 +1,6 @@
+# frontend
+apps/frontend/et-web/node_modules
+apps/frontend/et-web/.tanstack
+apps/frontend/et-web/build/dist
+apps/frontend/et-web/docs
+

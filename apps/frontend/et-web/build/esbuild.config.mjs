@@ -41,6 +41,6 @@ esbuild
     ],
   })
   .then(() => {
-    console.log("Build complete.");
+    console.log("Building expense tracker frontend completed successfully😃");
   })
   .catch(() => process.exit(1));

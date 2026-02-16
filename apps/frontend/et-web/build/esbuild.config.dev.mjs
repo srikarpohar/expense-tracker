@@ -177,7 +177,7 @@ for (const k in process.env) {
 }
 
 const esbuildOptions = {
-  entryPoints: ["src/index.tsx"],
+  entryPoints: ["src/index.html", "src/index.tsx"],
   outdir: "build/dist",
   jsx: "transform",
   bundle: true, // Enable bundling
@@ -210,4 +210,6 @@ const serverOptions = {
   port: 4200
 }
 
-createServer(esbuildOptions, serverOptions).start();
+createServer(esbuildOptions, serverOptions).start().then(() => {
+  console.log("Development server is running at http://localhost:4200");
+});
