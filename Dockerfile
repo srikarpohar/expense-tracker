@@ -12,7 +12,7 @@ RUN npm install -g typescript
 WORKDIR /app
 
 # Shared service: build the shared service for both frontend and backend.
-FROM base AS shared-build
+FROM base AS shared-dev
 
 WORKDIR /app
 COPY pnpm-workspace.yaml package.json ./
@@ -23,36 +23,36 @@ RUN pnpm install
 
 COPY shared/tsconfig.json ./
 COPY shared/src ./src
-RUN --mount=type=bind,source=shared/src,target=/app/shared/src pnpm run build
+CMD [ "pnpm", "run", "build:watch" ]
 
 # backend service: build the backend service using the shared service.
-FROM base AS backend-build
+FROM base AS backend-dev
 RUN npm install -g @nestjs/cli
 
 WORKDIR /app
-COPY --from=shared-build /app/package.json /app/pnpm-workspace.yaml ./
-COPY --from=shared-build /app/node_modules ./node_modules
-COPY --from=shared-build /app/shared ./shared
+COPY --from=shared-dev /app/package.json /app/pnpm-workspace.yaml ./
+COPY --from=shared-dev /app/node_modules ./node_modules
+COPY --from=shared-dev /app/shared ./shared
 
 WORKDIR /app/apps/backend/main-app/
 COPY apps/backend/main-app/package.json ./
 RUN pnpm install
 
-COPY apps/backend/main-app/tsconfig.json ./
-COPY apps/backend/main-app/src ./src
+COPY apps/backend/main-app ./
+# COPY apps/backend/main-app/src ./src
 
 WORKDIR /app
 EXPOSE 3000
 CMD ["pnpm", "run", "et-backend", "start:dev"]
 
 # frontend service: build the frontend service using the shared service.
-FROM base AS frontend-build
+FROM base AS frontend-dev
 RUN npm i -g npm-run-all @tanstack/router-cli
 
 WORKDIR /app
-COPY --from=shared-build /app/package.json /app/pnpm-workspace.yaml ./
-COPY --from=shared-build /app/node_modules ./node_modules
-COPY --from=shared-build /app/shared ./shared
+COPY --from=shared-dev /app/package.json /app/pnpm-workspace.yaml ./
+COPY --from=shared-dev /app/node_modules ./node_modules
+COPY --from=shared-dev /app/shared ./shared
 
 WORKDIR /app/apps/frontend/et-web/
 COPY apps/frontend/et-web/package.json ./

@@ -1,34 +1,84 @@
 name: expense-tracker
 services:
-  shared:
+  shared-dev:
     build:
       context: .
       dockerfile: Dockerfile
-      target: shared-build
+      target: shared-dev
+    volumes:
+      - type: bind
+        source: ./shared/src
+        target: /app/shared/src
+      - shared-build:/app/shared/dist
 
-  # backend:
-  #   ports:
-  #     - "3000:3000"
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     target: backend-build
-  #   depends_on:
-  #     - shared
+  database:
+    image: postgres:18
+    secrets:
+      - db-credentials
+    ports:
+      - "5435:5432"
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        set -a
+        source /run/secrets/db-credentials
+        set +a
+        exec docker-entrypoint.sh postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql
 
-  frontend:
+  backend-dev:
+    ports:
+      - "3000:3000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-dev
+    volumes:
+      - type: bind
+        source: ./apps/backend/main-app
+        target: /app/apps/backend/main-app
+      - /app/apps/backend/main-app/node_modules
+      - shared-build:/app/shared/dist
+    depends_on:
+      shared-dev:
+        condition: service_started
+      database:
+        condition: service_healthy
+
+
+  frontend-dev:
     ports:
       - "4200:4200"
     build:
       context: .
       dockerfile: Dockerfile
-      target: frontend-build
+      target: frontend-dev
     stdin_open: true
     volumes:
       - type: bind
         source: ./apps/frontend/et-web
         target: /app/apps/frontend/et-web
       - /app/apps/frontend/et-web/node_modules
-      - type: bind
-        source: ./shared/src
-        target: /app/shared/src
+      - shared-build:/app/shared/dist
+    depends_on:
+      shared-dev:
+        condition: service_started  
+      database:
+          condition: service_healthy
+
+volumes:
+  shared-build:
+    driver: local
+  db-data:
+    driver: local
+
+secrets:
+  db-credentials:
+    file: ./apps/backend/main-app/secrets/db_credentials.env

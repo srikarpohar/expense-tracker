@@ -4,3 +4,11 @@ apps/frontend/et-web/.tanstack
 apps/frontend/et-web/build/dist
 apps/frontend/et-web/docs
 
+# backend
+apps/backend/main-app/node_modules
+apps/backend/main-app/.git
+apps/backend/main-app/assets
+apps/backend/main-app/migrations
+apps/backend/main-app/dist
+apps/backend/main-app/*.log
+apps/backend/main-app/*.md

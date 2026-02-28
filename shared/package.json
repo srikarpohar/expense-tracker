@@ -4,7 +4,8 @@
   "description": "Shared data for expense tracker",
   "main": "dist/src/index.js",
   "scripts": {
-    "build": "rm -rf dist && tsc -b",
+    "build": "pnpm run clean && tsc -b",
+    "build:watch": "tsc -b --watch",
     "clean": "rm -rf dist"
   },
   "dependencies": {

@@ -14,12 +14,12 @@ export const getCountries = () => {
  * Check if country code exists
  */
 export const isValidCountry = (code: CountryCode): boolean => {
-    return countries.some(c => c.code === code);
+    return countries.some((c: any) => c.code === code);
 }
 
 /**
  * Get country metadata by ISO code
  */
 export const getCountryByCode = (code: string): Country | undefined => {
-    return countries.find(c => c.code === code);
+    return countries.find((c: any) => c.code === code);
 }
