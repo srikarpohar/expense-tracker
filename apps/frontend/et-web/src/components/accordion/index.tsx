@@ -32,9 +32,9 @@ function Accordion(props: AccordionProps) {
         }
         return initialOpenHeaders;
     });
-    const refs = useRef<AccordionHeaderRef[]>(new Array(props.data.length).fill(0));
+    const refs = useRef<Array<AccordionHeaderRef | null>>(new Array(props.data.length).fill(null));
 
-    const addRef = (el: any, index: number) => {
+    const addRef = (el: AccordionHeaderRef | null, index: number) => {
         if (el && !refs.current[index]) {
             refs.current[index] = el;
         }
@@ -54,29 +54,24 @@ function Accordion(props: AccordionProps) {
     return (
         <ul className="w-full h-full">
             {props.data.map(((row, index) => (
-                <>
-                    <li key={`${row.id}`} className="mb-2 bg-gray-200 rounded-xl">
-                        <AccordionHeader ref={(el) => addRef(el, index)} 
-                            id={row.id} 
-                            title={row.title} 
-                            openOnMount={openHeaders.has(row.id)}
-                            toggleHeader={() => toggleHeader(row.id)}
-                            key={`header-${row.id}`}>
-                            {props.headerComponent}
-                        </AccordionHeader>
-                        
-                        <ul className={`ml-3 list-header ${openHeaders.has(row.id) ? 'list-expand-animation' : 'list-collapse-animation'}`} 
-                            key={`items-${row.id}`}>
-                            {row.items.map(item => (
-                                <li key={`${row.id}-${item.id}`} className="mb-1">
-                                    <AccordionItem key={`item-${row.id}-${item.id}`} id={item.id} title={item.title}>
-                                        {props.itemComponent}
-                                    </AccordionItem>
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                </>
+                <li key={row.id} className="mb-2 bg-gray-200 rounded-xl">
+                    <AccordionHeader ref={(el) => addRef(el, index)}
+                        title={row.title}
+                        isOpen={openHeaders.has(row.id)}
+                        toggleHeader={() => toggleHeader(row.id)}>
+                        {props.headerComponent}
+                    </AccordionHeader>
+                    
+                    <ul className={`ml-3 list-header ${openHeaders.has(row.id) ? 'list-expand-animation' : 'list-collapse-animation'}`}>
+                        {row.items.map(item => (
+                            <li key={`${row.id}-${item.id}`} className="mb-1">
+                                <AccordionItem title={item.title}>
+                                    {props.itemComponent}
+                                </AccordionItem>
+                            </li>
+                        ))}
+                    </ul>
+                </li>
             )))}
         </ul>
     );
