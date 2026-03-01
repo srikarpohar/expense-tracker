@@ -44,7 +44,7 @@ services:
       - type: bind
         source: ./apps/backend/main-app
         target: /app/apps/backend/main-app
-      - /app/apps/backend/main-app/node_modules
+      - backend-node-modules:/app/apps/backend/main-app/node_modules
       - shared-build:/app/shared/dist
     depends_on:
       shared-dev:
@@ -65,7 +65,7 @@ services:
       - type: bind
         source: ./apps/frontend/et-web
         target: /app/apps/frontend/et-web
-      - /app/apps/frontend/et-web/node_modules
+      - frontend-node-modules:/app/apps/frontend/et-web/node_modules
       - shared-build:/app/shared/dist
     depends_on:
       shared-dev:
@@ -74,6 +74,10 @@ services:
           condition: service_healthy
 
 volumes:
+  frontend-node-modules:
+    driver: local
+  backend-node-modules:
+    driver: local
   shared-build:
     driver: local
   db-data:
