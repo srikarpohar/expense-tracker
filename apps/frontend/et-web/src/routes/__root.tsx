@@ -1,38 +1,36 @@
-// src/App.tsx
-import { createRootRoute, Outlet, useLocation, useRouter } from "@tanstack/react-router";
-import logo from "../assets/logo.png"; // Import the logo image
-import { useContext, useEffect } from "react";
-import { AuthContext } from "../context/auth/auth.context";
+import { createRootRouteWithContext, Outlet, redirect } from "@tanstack/react-router";
+import type { RouterContext } from "../routerContext";
 
-const App = () => {
-  const { userData } = useContext(AuthContext);
-  const router = useRouter();
-  const pathname = useLocation({
-    select: (location) => location.pathname,
-  });
-  const publicRoutes = ["/login", "/signup", "/dashboard"];
+const PUBLIC_PATHS = new Set(["/login", "/signup"]);
 
-  useEffect(() => {
-    if(!publicRoutes.includes(pathname)) {
-      if(userData) {
-        router.navigate({
-          to: "/dashboard"
-        })
-      } else {
-        router.navigate({
-          to: "/login"
-        })
-      }
-    }
-  }, []);
-
-  return (
-    <Outlet />
-  );
+const normalizePath = (value: string) => {
+  if (!value || value === "/") {
+    return "/";
+  }
+  return value.replace(/\/+$/, "");
 };
 
-export const Route = createRootRoute({
+const isPublicRoute = (pathname: string) => PUBLIC_PATHS.has(normalizePath(pathname));
+
+const App = () => <Outlet />;
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: ({ context, location }) => {
+    if (isPublicRoute(location.pathname)) {
+      return;
+    }
+
+    if (!context.verifyTokenResponse) {
+      console.log("User is not authenticated. Redirecting to login page.");
+      throw redirect({
+        to: "/login",
+        search: {
+          redirect: location.href,
+        },
+      });
+    }
+  },
   component: App,
-})
+});
 
 export default App;

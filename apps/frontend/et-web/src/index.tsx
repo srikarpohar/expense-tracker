@@ -1,18 +1,13 @@
 import { createRoot } from "react-dom/client";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
-import {routeTree} from "./routeTree.gen";
+import { RouterProvider } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import { AuthProvider } from "./context/auth/auth.provider";
+import { router } from "./router";
 
 // if(process.env.NODE_ENV == "dev") {
 //     new EventSource('/esbuild').addEventListener('change', () => location.reload())
 // }
-
-// Create router with route tree generated from file based router exported from routeTree.gen.ts.
-const router = createRouter({
-    routeTree: routeTree
-})
 
 declare module '@tanstack/react-router' {
     interface Register {
