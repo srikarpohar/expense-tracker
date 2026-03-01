@@ -46,10 +46,10 @@ function LoginComponent() {
 
       // Done: store {{response.data}} (the token) in local storage or context
       console.log("Logging in with:", response.data);
-      setUserData?.(response.data.payload);
       router.navigate({
         to: "/dashboard",
       });
+      setUserData?.(response.data.payload);
     },
     onSuccess: (response: void) => {
       console.log("Login successful", response);

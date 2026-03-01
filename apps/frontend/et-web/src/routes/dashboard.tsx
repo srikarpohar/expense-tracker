@@ -121,7 +121,7 @@ function RouteComponent() {
           <button className={`p-1 bg-green-500 text-white flex items-center minimise-button`}
             style={{
               "--tw-rotate": minimiseFilters ? '180deg' : '0deg',
-              "--tw-scale": minimiseFilters ? '0.6' : '0.8',
+              "--tw-scale": minimiseFilters ? '0.6' : '0.9',
               "--tw-left": minimiseFilters ? '-15px' : '332px'
             } as React.CSSProperties} 
             onClick={() => setMinimiseFilters(!minimiseFilters)}>

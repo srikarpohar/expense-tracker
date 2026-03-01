@@ -17,7 +17,7 @@
 
 .minimise-button {
     position: absolute;
-    top: 55px;
+    top: 12%;
     width: 36px;
     aspect-ratio: 1 / 1;
     left: var(--tw-left);
@@ -30,6 +30,7 @@
     vertical-align: middle;
     border-radius: 50%;
     cursor: pointer;
+    z-index: 60;
 
     &:hover {
         scale: calc(var(--tw-scale) + 0.2);
