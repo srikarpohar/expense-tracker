@@ -8,6 +8,7 @@ import { AuthenticatorTypes } from "./providers/authenticator";
 import { ConfigService } from "@nestjs/config";
 import { PublicAPIResource } from "src/shared/guards/public.decorator";
 import { APIUtilsService } from "src/shared/utils/api_utils.service";
+import { CacheManagerService } from "src/shared/cache-manager/cache-manager.service";
 
 @PublicAPIResource()
 @Controller("auth")
@@ -15,7 +16,8 @@ export class AuthController {
     constructor(
         private readonly apiUtilsService: APIUtilsService,
         private readonly authService: AuthService,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        private readonly cacheManagerService: CacheManagerService
     ) {}
 
     @Post("signup")
@@ -88,6 +90,24 @@ export class AuthController {
             },
             statusCode: 201
         })
+    }
+
+    @Post("logout")
+    async logoutUser(
+       @Req() req: Request,
+       @Res() res: Response<ResponseDto<{isLoggedOut: boolean}>>
+    ) {
+        const token = this.apiUtilsService.extractTokenFromHeader(req);
+        const tokenPayload = await this.authService.verifyToken(token);
+
+        await this.authService.logoutUser(token, tokenPayload);
+
+        res.status(201).send({
+            data: {
+                isLoggedOut: true,
+            },
+            statusCode: 201
+        });
     }
 
 }

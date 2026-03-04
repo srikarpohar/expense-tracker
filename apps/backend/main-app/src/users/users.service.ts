@@ -58,7 +58,7 @@ export class UsersService {
         return createdUser.at(0);
     }
 
-    async findUserByField(field: string, value: string): Promise<IUser | null> {
+    async findUserByField(field: keyof IUser, value: string | number): Promise<IUser | null> {
         const result = await this.dbConnection.sqlInstance`
             SELECT * FROM users WHERE ${this.dbConnection.sqlInstance(field)} = ${value} LIMIT 1;
         `;

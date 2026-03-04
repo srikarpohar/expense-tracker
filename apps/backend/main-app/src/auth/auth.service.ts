@@ -7,14 +7,19 @@ import { OTPAuthenticator } from "./providers/otp-authenticator";
 import { UserVerificationsService } from "src/users/user_verifications/user_verifications.service";
 import { ConfigService } from "@nestjs/config";
 import { LoggerService } from "src/shared/logger/logger.service";
+import { CacheManagerService } from "src/shared/cache-manager/cache-manager.service";
 
 @Injectable()
 export class AuthService {
+    private readonly BLACKLISTED_TOKENS_CACHE_KEY = "blacklisted_tokens";
     @Inject()
     private readonly usersService: UsersService;
 
     @Inject()
     private readonly logger: LoggerService;
+
+    @Inject()
+    private readonly cacheManagerService: CacheManagerService;
 
     constructor(
         private readonly configService: ConfigService,
@@ -67,7 +72,20 @@ export class AuthService {
     }
 
     async verifyToken(token: string): Promise<IUserPayload> {
+        // Verify token is blacklisted.
+        const tokens = await this.cacheManagerService.getListData<string>(this.BLACKLISTED_TOKENS_CACHE_KEY);
+        if(tokens?.length && tokens.includes(token)) {
+            throw new UnauthorizedException({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                data: {
+                    retry: false
+                },
+                errorMessage: "Token is blacklisted!!"
+            })
+        }
+
         try {
+            // Verify expiry time of the token.
             const payload = await this.jwtService.verifyAsync<IUserPayload>(token, {
                 secret: this.configService.get<string>('jwt.secret'),
                 algorithms: ["HS256"],
@@ -113,5 +131,21 @@ export class AuthService {
         const jwtToken = await this.jwtService.signAsync<IUserPayload>(payload);
 
         return {payload, token: jwtToken};
+    }
+
+    async logoutUser(userToken: string, userPayload: IUserPayload) {
+        const userDoc = await this.usersService.findUserByField("user_id", userPayload.sub);
+        if(!userDoc) {
+            throw new BadRequestException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                data: null,
+                errorMessage: "Invalid credentials"
+            })
+        }
+
+        // add blacklisted token in cache.
+        const tokens = await this.cacheManagerService.getListData<string>(this.BLACKLISTED_TOKENS_CACHE_KEY);
+        await this.cacheManagerService.setListData<string>(this.BLACKLISTED_TOKENS_CACHE_KEY, [...tokens, userToken]);
+        return true;
     }
 }

@@ -73,7 +73,7 @@ const dummyAccordionData: AccordionData[] = [{
 
 function RouteComponent() {
   // Context
-  const {userData} = useContext(AuthContext);
+  const {userData, logoutUser} = useContext(AuthContext);
 
   // State.
   const [currDate, setCurrDate] = useState(new Date());
@@ -133,7 +133,7 @@ function RouteComponent() {
                 <Accordion data={accordionData} openAtStart></Accordion>
             </div>
 
-            <button className='bg-red-400 text-white rounded-md m-2 p-2 max-w-[75%]!'>
+            <button className='bg-red-400 text-white rounded-md m-2 p-2 max-w-[75%]! cursor-pointer' onClick={logoutUser}>
               Logout
             </button>
         </Activity>

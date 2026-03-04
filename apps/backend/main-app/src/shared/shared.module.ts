@@ -4,6 +4,7 @@ import { GuardsModule } from './guards/guards.module';
 import { UtilsModule } from './utils/utils.module';
 import { StorageModule } from './storage/storage.module';
 import { LoggerModule } from './logger/logger.module';
+import { CacheManagerModule } from './cache-manager/cache-manager.module';
 @Global()
 @Module({
     imports: [
@@ -11,14 +12,16 @@ import { LoggerModule } from './logger/logger.module';
         GuardsModule,
         UtilsModule,
         StorageModule,
-        LoggerModule
+        LoggerModule,
+        CacheManagerModule
     ],
     exports: [
         DatabaseModule,
         GuardsModule,
         UtilsModule,
         StorageModule,
-        LoggerModule
+        LoggerModule,
+        CacheManagerModule
     ]
 })
 export class SharedModule {}

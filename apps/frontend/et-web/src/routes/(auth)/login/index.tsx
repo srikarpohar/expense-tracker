@@ -11,56 +11,56 @@ export const Route = createFileRoute('/(auth)/login/')({
   component: LoginComponent,
 })
 
-interface IState {
+export interface ILoginPageState {
   username: string;
   password: string;
 }
 
 function LoginComponent() {
-  const { setUserData } = useContext(AuthContext);
+  const { loginUser } = useContext(AuthContext);
 
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors }
-  } = useForm<IState>();
+  } = useForm<ILoginPageState>();
 
-  const loginMutation = useMutation({
-    mutationFn: async (data: IState) => {
-      // Perform login logic here, e.g., call an API
-      const response = await axiosHttpApiRequestLayer.post<LoginUserRequestDto, LoginUserResponseDto>("/auth/login", {
-        username: data.username,
-        password: data.password,
-      });
+  // const loginMutation = useMutation({
+  //   mutationFn: async (data: ILoginPageState) => {
+  //     // Perform login logic here, e.g., call an API
+  //     const response = await axiosHttpApiRequestLayer.post<LoginUserRequestDto, LoginUserResponseDto>("/auth/login", {
+  //       username: data.username,
+  //       password: data.password,
+  //     });
 
-      // const result: string = await new Promise((resolve) => {
-      //   setTimeout(() => {
-      //     console.log("Simulated login response");
-      //     resolve("jgwafdjsgkj;l");
-      //     router.navigate({
-      //       to: "/dashboard",
-      //     });
-      //   }, 10000);
-      // });
+  //     // const result: string = await new Promise((resolve) => {
+  //     //   setTimeout(() => {
+  //     //     console.log("Simulated login response");
+  //     //     resolve("jgwafdjsgkj;l");
+  //     //     router.navigate({
+  //     //       to: "/dashboard",
+  //     //     });
+  //     //   }, 10000);
+  //     // });
 
-      // Done: store {{response.data}} (the token) in local storage or context
-      console.log("Logging in with:", response.data);
-      router.navigate({
-        to: "/dashboard",
-      });
-      setUserData?.(response.data.payload);
-    },
-    onSuccess: (response: void) => {
-      console.log("Login successful", response);
-    },
-    onError: (error) => {
-      console.error("Login failed:", error);
-    }
-  });
+  //     // Done: store {{response.data}} (the token) in local storage or context
+  //     console.log("Logging in with:", response.data);
+  //     setUserData?.(response.data.payload);
+  //   },
+  //   onSuccess: (response: void) => {
+  //     router.navigate({
+  //       to: "/dashboard",
+  //     });
+  //     console.log("Login successful", response);
+  //   },
+  //   onError: (error) => {
+  //     console.error("Login failed:", error);
+  //   }
+  // });
 
-  const onSubmitForm: SubmitHandler<IState> = (data) => {
-    loginMutation.mutate(watch());
+  const onSubmitForm: SubmitHandler<ILoginPageState> = () => {
+    loginUser?.mutate(watch());
   };
 
   const router = useRouter();
@@ -92,7 +92,7 @@ function LoginComponent() {
               <div className='flex justify-around items-center gap-1'>
                   <input type="submit" 
                     className='action-btn'
-                    disabled={loginMutation.status === 'pending'}
+                    disabled={loginUser?.status === 'pending'}
                     value="Login" />
                   <button type="button" 
                     className='action-btn' 
@@ -107,7 +107,7 @@ function LoginComponent() {
           </fieldset>
       </form>
 
-      <Activity mode={loginMutation.isPending ? "visible" : "hidden"}>
+      <Activity mode={loginUser?.isPending ? "visible" : "hidden"}>
         <p>Loading...</p>
       </Activity>
     </div>

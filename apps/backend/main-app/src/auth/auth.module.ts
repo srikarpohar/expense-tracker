@@ -9,6 +9,7 @@ import { GoogleAuthenticator } from "./providers/google-authenticator";
 import { OTPAuthenticator } from "./providers/otp-authenticator";
 import { UsersModule } from "src/users/users.module";
 import { UtilsModule } from "src/shared/utils/utils.module";
+import { CacheManagerModule } from "src/shared/cache-manager/cache-manager.module";
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { UtilsModule } from "src/shared/utils/utils.module";
             }),
             inject: [ConfigService]
         }),
+        CacheManagerModule,
         MulterModule.registerAsync({
             imports: [ConfigModule],
             useFactory: (config: ConfigService) => ({

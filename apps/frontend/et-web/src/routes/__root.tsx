@@ -16,6 +16,7 @@ const App = () => <Outlet />;
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: ({ context, location }) => {
+    console.log("Checking context:", context);
     if (isPublicRoute(location.pathname)) {
       return;
     }
