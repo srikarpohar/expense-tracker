@@ -9,6 +9,7 @@
     "et-backend": "pnpm --filter \"et-backend\" run",
     "backend-dev": "docker compose up -d backend-dev",
     "frontend-dev": "docker compose up -d frontend-dev",
+    "app-build": "docker compose build backend-dev frontend-dev shared-dev",
     "app-dev": "docker compose up -d backend-dev frontend-dev"
   },
   "keywords": [],

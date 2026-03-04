@@ -16,6 +16,10 @@ export class UserVerificationsService {
                 verification_status: UserVerificationStatus.OTP_SENT, 
                 no_of_attempts: 0 
             })}
+            ON CONFLICT(user_id)
+            DO UPDATE SET
+                verification_status=${UserVerificationStatus.OTP_SENT},
+                no_of_attempts=no_of_attempts + 1
             RETURNING *;
         `;
         return entry.at(0);

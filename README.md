@@ -10,5 +10,4 @@ Made using React, NestJS.
 # Docker build
 
 1. Check docker compose issues
-    1.1. Backend - check errors on d.ts files.
-    1.2. Shared - Sync shared folder changes to it's build and sync the dist folder with frontend and backend containers.
+    1.1 - Analyze image size for backend/frontend. They are almost 1gb and 500mb in size respectively.

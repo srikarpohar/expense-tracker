@@ -35,4 +35,8 @@ export class LoggerService {
     warning(message: string) {
         this.logger.warn(message);
     }
+
+    debug(message: string) {
+        this.logger.debug(message);
+    }
 }
