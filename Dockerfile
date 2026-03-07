@@ -43,7 +43,8 @@ COPY apps/backend/main-app ./
 
 WORKDIR /app
 EXPOSE 3000
-CMD ["pnpm", "run", "et-backend", "start:dev"]
+EXPOSE 9229
+CMD ["pnpm", "run", "et-backend", "start:debug"]
 
 # frontend service: build the frontend service using the shared service.
 FROM base AS frontend-dev

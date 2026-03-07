@@ -17,7 +17,8 @@ export class CacheManagerService {
     }
 
     async getListData<T>(key: string): Promise<T[]> {
-        return JSON.parse(await this.cacheManager.get(key) || "") as T[];
+        const data = await this.cacheManager.get<string>(key);
+        return JSON.parse(data || "{}") as T[];
     }
 
 }

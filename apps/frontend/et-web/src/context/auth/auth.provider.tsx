@@ -2,52 +2,148 @@ import type { ILogoutUserResponseDTO, IUserPayload, LoginUserRequestDto, LoginUs
 import { useState, type ReactNode } from "react";
 import { axiosHttpApiRequestLayer } from "../../api-layer/base.service";
 import { AuthContext } from "./auth.context";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "../../router";
 import type { ILoginPageState } from "../../routes/(auth)/login";
+import type { IApiResponse } from "../../types/api.types";
+
+const AUTH_TOKEN_STORAGE_KEY = "authToken";
+const VERIFY_TOKEN_RESPONSE_KEY = "verifyTokenResponse";
+const VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY = "verifyTokenResponseUpdatedAt";
+
+const isBrowser = () => typeof window !== "undefined";
+
+const persistAuthToken = (token: string) => {
+  if (!isBrowser()) return;
+  window.localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+};
+
+const clearAuthToken = () => {
+  if (!isBrowser()) return;
+  window.localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+};
+
+const persistVerifyTokenResponse = (response: VerifyTokenResponseDTO) => {
+  if (!isBrowser()) return;
+  window.localStorage.setItem(VERIFY_TOKEN_RESPONSE_KEY, JSON.stringify(response));
+  window.localStorage.setItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY, Date.now().toString());
+};
+
+const clearVerifyTokenResponse = () => {
+  if (!isBrowser()) return;
+  window.localStorage.removeItem(VERIFY_TOKEN_RESPONSE_KEY);
+  window.localStorage.removeItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY);
+};
+
+const readVerifyTokenResponseFromStorage = (): VerifyTokenResponseDTO | null => {
+  if (!isBrowser()) return null;
+  const storedValue = window.localStorage.getItem(VERIFY_TOKEN_RESPONSE_KEY);
+  if (!storedValue) return null;
+  try {
+    return JSON.parse(storedValue) as VerifyTokenResponseDTO;
+  } catch (error) {
+    clearVerifyTokenResponse();
+    return null;
+  }
+};
+
+const getInitialVerifyTokenData = () => {
+  const response = readVerifyTokenResponseFromStorage();
+  if (!response) {
+    return {
+      initialData: undefined,
+      initialDataUpdatedAt: undefined,
+    };
+  }
+
+  if (!isBrowser()) {
+    return {
+      initialData: response,
+      initialDataUpdatedAt: undefined,
+    };
+  }
+
+  const updatedAtRaw = window.localStorage.getItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY);
+  const updatedAt = updatedAtRaw ? Number(updatedAtRaw) : Date.now();
+  return {
+    initialData: response,
+    initialDataUpdatedAt: updatedAt,
+  };
+};
+
+const resetStoredAuthData = () => {
+  clearAuthToken();
+  clearVerifyTokenResponse();
+};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userData, setUserData] = useState<IUserPayload | null>(null);
+  const queryClient = useQueryClient();
 
-  const verifyTokenQuery = useQuery({
-    queryKey: ["verify-token"],
-    queryFn: async () => {
-      try {
-        const response = await axiosHttpApiRequestLayer.get<any, VerifyTokenResponseDTO>("/auth/verify-token", {}, {});
+  const clearAuthState = () => {
+    resetStoredAuthData();
+    queryClient.removeQueries({ queryKey: ["verify-token"], exact: true });
+  };
+
+  const verifyToken = async (): Promise<VerifyTokenResponseDTO> => {
+    try {
+      const data = getInitialVerifyTokenData().initialData;
+      let payload = data?.payload;
+      if(payload) {
         setUserData({
-          sub: response.data.payload.sub,
-          username: response.data.payload.username
+          sub: payload.sub,
+          username: payload.username,
         });
-        router.update({ context: { verifyTokenResponse: response.data } });
-        return response;
-      } catch(error: any) {
-        console.log(`Error while verifying token: ${error.message}`);
-        setUserData(null);
-        router.update({ context: { verifyTokenResponse: null } });
-        throw error;
+        router.update({ context: { verifyTokenResponse: {payload} } });
+        return {payload};
       }
-    },
+
+      const response = await axiosHttpApiRequestLayer.get<any, VerifyTokenResponseDTO>("/auth/verify-token", {}, {});
+      payload = response.data.payload;
+      setUserData({
+        sub: payload.sub,
+        username: payload.username,
+      });
+      router.update({ context: { verifyTokenResponse: response.data } });
+      persistVerifyTokenResponse(response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log(`Error while verifying token: ${error.message}`);
+      setUserData(null);
+      router.update({ context: { verifyTokenResponse: null } });
+      resetStoredAuthData();
+      throw error;
+    }
+  };
+
+  const verifyTokenQuery = useQuery<VerifyTokenResponseDTO | undefined>({
+    queryKey: ["verify-token"],
+    queryFn: verifyToken,
     retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 60,
   });
 
   const logoutUser = async () => {
     try {
       const response = await axiosHttpApiRequestLayer.post<{}, ILogoutUserResponseDTO>("/auth/logout", {});
-      if(response.statusCode == 201 && response.data.isLoggedOut) {
+      if (response.statusCode == 201 && response.data.isLoggedOut) {
         console.log("User logged out successfully");
         setUserData(null);
       } else {
         console.log("Unexpected response while logging out user:", response);
       }
-    } catch(error) {
+    } catch (error) {
       console.log(`Error while logging out user: ${error}`);
     } finally {
+      clearAuthState();
+      setUserData(null);
       router.navigate({
         to: "/login",
       });
     }
-  }
+  };
 
   const loginUser = useMutation<LoginUserResponseDto, unknown, ILoginPageState, unknown>({
     mutationFn: async (data: ILoginPageState) => {
@@ -59,54 +155,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Done: store {{response.data}} (the token) in local storage or context
       console.log("Logging in with:", response.data);
-      setUserData?.(response.data.payload);
       return response.data;
     },
     onSuccess: (response: LoginUserResponseDto) => {
-      router.update({ context: { verifyTokenResponse: {payload: response.payload} } });
+      const cachedVerifyTokenResponse: IApiResponse<VerifyTokenResponseDTO> = {
+        statusCode: 200,
+        data: {
+          payload: response.payload,
+        },
+        isLoading: false,
+      };
+      persistAuthToken(response.token);
+      persistVerifyTokenResponse(cachedVerifyTokenResponse.data);
+      queryClient.setQueryData(["verify-token"], cachedVerifyTokenResponse);
+      setUserData(response.payload);
+      router.update({ context: { verifyTokenResponse: cachedVerifyTokenResponse.data } });
       router.navigate({
         to: "/dashboard",
       });
       console.log("Login successful", response);
     },
     onError: (error) => {
+      resetStoredAuthData();
       router.update({ context: { verifyTokenResponse: null } });
       router.navigate({
         to: "/dashboard",
       });
       console.error("Login failed:", error);
-    }
+    },
   });
 
-  if(verifyTokenQuery.isPending) {
-    return (
-      <div>Checking if user has logged in....</div>
-    )
+  if (verifyTokenQuery.isPending) {
+    return <div>Checking if user has logged in....</div>;
   }
 
   return (
-    <AuthContext.Provider value={{userData, setUserData, logoutUser, loginUser}}>
-        {children}
+    <AuthContext.Provider value={{ userData, setUserData, logoutUser, loginUser }}>
+      {children}
     </AuthContext.Provider>
   );
 }
 
-// async (data: ILoginPageState) => {
-//     try {
-//       // Perform login logic here, e.g., call an API
-//       const response = await axiosHttpApiRequestLayer.post<LoginUserRequestDto, LoginUserResponseDto>("/auth/login", {
-//         username: data.username,
-//         password: data.password,
-//       });
-  
-//       // Done: store {{response.data}} (the token) in local storage or context
-//       console.log("Logging in with:", response.data);
-//       setUserData?.(response.data.payload);
-//     } catch(error) {
-//       console.log(`Error while logging out user: ${error}`);
-//     } finally {
-//       router.navigate({
-//         to: "/login",
-//       });
-//     }
-//   }

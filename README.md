@@ -7,7 +7,16 @@ Made using React, NestJS.
 
 [Link](https://app.eraser.io/workspace/jYw7zQJ140LYhqg0yxg5)
 
-# Docker build
+# TODO:
 
-1. Check docker compose issues
-    1.1 - Analyze image size for backend/frontend. They are almost 1gb and 500mb in size respectively.
+- Frontend changes
+    1.1. Add expense dialog
+    1.2. Showing expenses based on date in calendar.
+
+- Backend changes
+    2.1. Add expense API.
+    2.2. Get expenses API.
+
+- Docker build
+    1. Check docker compose issues
+        1.1 - Analyze image size for backend/frontend. They are almost 1gb and 500mb in size respectively.
