@@ -36,3 +36,26 @@
         scale: calc(var(--tw-scale) + 0.2);
     }
 }
+
+.submit-btn {
+    background: linear-gradient(135deg, var(--submit-btn-bg-gradient-1), var(--submit-btn-bg-gradient-2));
+    flex: 1;
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-weight: 600;
+    box-shadow: 0 6px 16px rgba(72, 246,59, 0.25);
+    border: 1px solid var(--submit-btn-bg-gradient-1);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    cursor: pointer;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+        background: linear-gradient(135deg, var(--submit-btn-bg-gradient-1), var(--submit-btn-bg-gradient-2));
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}

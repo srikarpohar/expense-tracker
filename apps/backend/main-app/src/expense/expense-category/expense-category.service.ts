@@ -3,32 +3,40 @@ import { IExpenseCategory } from 'expense-tracker-shared';
 import { PgDatabaseConnectionService } from 'src/shared/database/db.connection';
 
 @Injectable()
-export class ExpenseCatgeoryService {
+export class ExpenseCategoryService {
 
     constructor(
         private readonly dbConnection: PgDatabaseConnectionService
     ) {}
 
-    async checkIfCategoryExistsWithName(name: string): Promise<boolean> {
+    async getCategoryByName(name: string): Promise<IExpenseCategory | null> {
         const result: IExpenseCategory[] = await this.dbConnection.sqlInstance`
-            SELECT name from expense_category WHERE name=${name};
+            SELECT id FROM expense_category WHERE name=${name};
         `;
 
-        return result.length ? true : false;
+        return result ? result[0] : null;
     }
 
-    async createCategory(name: string): Promise<number | null> {
+    async createCategoryIfNotPresent(name: string, description?: string): Promise<number> {
+        let createdCategory;
         try {
-            const categoryDoc = {
-                name: name
+            let categoryDoc = await this.getCategoryByName(name);
+            if(categoryDoc?.id) {
+                return categoryDoc.id;
+            }
+            
+            categoryDoc = {
+                name: name,
+                description: description || name,
             };
-            const createdCategory = await this.dbConnection.sqlInstance`
+            
+            createdCategory = await this.dbConnection.sqlInstance`
                 INSERT INTO expense_category
                 ${this.dbConnection.sqlInstance(categoryDoc, ["name"])}
                 RETURNING *
             `;
 
-            return createdCategory.length ? (createdCategory[0] as IExpenseCategory).id as number : null;
+            return (createdCategory[0] as IExpenseCategory).id as number;
         } catch(error: any) {
             if(error.code == 23505) {
                 throw new ConflictException({
@@ -39,8 +47,8 @@ export class ExpenseCatgeoryService {
             }
             console.log(error);
         }
-
-        return null;
+        
+        return -1;
     }
 
 }

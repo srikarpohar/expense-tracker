@@ -100,13 +100,24 @@ export const up = (pgm) => {
         CREATE TYPE expense_actions AS ENUM('CREATED', 'AMOUNT_UPDATED', 'CURRENCY_UPDATED', 'TYPE_UPDATED', 'ITEMS_LIST_UPDATED', 'PAID', 'DELETED');
 
         CREATE TABLE IF NOT EXISTS expense_history (
-            log_id INT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+            log_id BIGINT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
             expense_id BIGINT NOT NULL,
             action expense_actions NOT NULL,
             action_done_on TIMESTAMP NOT NULL DEFAULT NOW(),
             action_done_by INT NOT NULL,
             CONSTRAINT fk_expense_id FOREIGN KEY(expense_id) REFERENCES expense(expense_id) ON DELETE RESTRICT,
             CONSTRAINT fk_action_done_by FOREIGN KEY(action_done_by) REFERENCES users(user_id) ON DELETE RESTRICT
+        );
+
+        CREATE TABLE IF NOT EXISTS user_transactions (
+            user_expense_id BIGINT GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+            user_id INT NOT NULL,
+            expense_id BIGINT NOT NULL,
+            is_recurring_expense BOOLEAN DEFAULT false,
+            transaction_type expense_type NOT NULL,
+            amount NUMERIC CHECK(amount > 0),
+            CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE RESTRICT,
+            CONSTRAINT fk_expense_id FOREIGN KEY(expense_id) REFERENCES expense(expense_id) ON DELETE RESTRICT
         );
         `
     )

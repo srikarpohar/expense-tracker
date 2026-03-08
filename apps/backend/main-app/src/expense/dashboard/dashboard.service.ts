@@ -1,13 +1,17 @@
 import { BadRequestException, HttpStatus, InternalServerErrorException } from "@nestjs/common";
-import { AddExpenseRequestDto, ExpenseLogActions, getCurrencyFromCode, IExpense, IExpenseHistory, IUserPayload } from "expense-tracker-shared";
+import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, getCurrencyFromCode, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-shared";
 import { PgDatabaseConnectionService } from "src/shared/database/db.connection";
 import { ExpenseHistoryService } from "../expense-history.service";
+import { ExpenseCategoryService } from "../expense-category/expense-category.service";
+import { UserTransactionsService } from "src/users/user-transactions/user-transactions.service";
 
 export class DashboardService {
 
     constructor(
         private dbConnection: PgDatabaseConnectionService,
-        private expenseHistoryService: ExpenseHistoryService
+        private expenseHistoryService: ExpenseHistoryService,
+        private expenseCategoryService: ExpenseCategoryService,
+        private userTransactionsService: UserTransactionsService
     ) {}
 
     getCalendarData(user: number, monthYear: string) {
@@ -18,7 +22,7 @@ export class DashboardService {
 
     async addExpense(data: AddExpenseRequestDto, user: IUserPayload): Promise<IExpense> {
         // Validate currency.
-        const currency = await getCurrencyFromCode(data.currency);
+        const currency = getCurrencyFromCode(data.currency);
         if(!currency) {
             throw new BadRequestException({
                 status: HttpStatus.BAD_REQUEST,
@@ -29,6 +33,11 @@ export class DashboardService {
 
         let expense;
         try {
+            // Check and create category if required.
+            if(!data.category_id) {
+                const expenseCategoryId = await this.expenseCategoryService.createCategoryIfNotPresent(data.category_name, data.category_description);
+                data["category_id"] = expenseCategoryId;
+            }
             //Create expense.
             const expenseDoc: IExpense = {
                 category_id: data.category_id,
@@ -45,6 +54,23 @@ export class DashboardService {
                 ${this.dbConnection.sqlInstance(expenseDoc, ["amount", "category_id", "user_id", "currency", "name", "notes"])}
                 RETURNING *
             `;
+            // Add log of expense in history table.
+            await this.expenseHistoryService.logExpenseAction(
+                {
+                    action: ExpenseLogActions.CREATED,
+                    expense_id: expense.at(0).id
+                },
+                user
+            );
+            // Add log of expense in user transactions table.
+            const userTransactionDoc: IUserTransaction = {
+                expense_id: expense.expense_id,
+                user_id: user.sub,
+                is_recurring_expense: !!expenseDoc.recurring_frequency,
+                transaction_type: ExpenseType.DEBIT,
+                amount: expenseDoc.amount
+            }
+            await this.userTransactionsService.createUserTransaction(userTransactionDoc);
         } catch(error: any) {
             console.log(`Error while creating expense: ${error}`);
             throw new InternalServerErrorException({

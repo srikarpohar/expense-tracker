@@ -2,7 +2,9 @@ import { ExpenseType, RecurringExpenseFrequency } from "../../enums";
 
 export type AddExpenseRequestDto = {
     name: string,
-    category_id: number,
+    category_name: string,
+    category_description: string,
+    category_id?: number,
     notes: string,
     amount: number,
     currency: string,

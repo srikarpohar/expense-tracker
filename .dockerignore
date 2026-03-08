@@ -12,3 +12,6 @@ apps/backend/main-app/migrations
 apps/backend/main-app/dist
 apps/backend/main-app/*.log
 apps/backend/main-app/*.md
+
+# shared
+secrets

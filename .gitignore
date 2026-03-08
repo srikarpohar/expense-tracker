@@ -13,3 +13,6 @@ apps/backend/main-app/assets/
 # Frontend
 apps/frontend/main-app/
 apps/frontend/quickstart-file-based/
+
+# db creds
+secrets

@@ -1,15 +1,15 @@
 import { Controller, Get, Post, Req, Res } from "@nestjs/common";
 import { type Response, type Request } from "express";
 import { DashboardService } from "./dashboard.service";
-import { AddExpenseCategoryRequestDto, AddExpenseCategoryResponseDto, AddExpenseRequestDto, AddExpenseResponseDTO, GetCalendarDataRequest, GetCalendarDataResponse, IUserPayload } from "expense-tracker-shared";
-import { ExpenseCatgeoryService } from "../expense-catgeory.service";
+import { ExpenseCategoryService } from "../expense-category/expense-category.service";
+import { AddExpenseRequestDto, AddExpenseResponseDTO, GetCalendarDataRequest, GetCalendarDataResponse, IUserPayload } from "expense-tracker-shared";
 
 @Controller("dashboard")
 export class DashboardController {
 
     constructor(
         private readonly dashboardService: DashboardService,
-        private readonly expenseCategoryService: ExpenseCatgeoryService
+        private readonly expenseCategoryService: ExpenseCategoryService
     ) {}
     
     @Get()
@@ -20,21 +20,10 @@ export class DashboardController {
         console.log("User info from token:", req["user"]);
 
         const { query } = req;
-        const user = req["user"];
+        const user = req["user"] as IUserPayload;
         const result = this.dashboardService.getCalendarData(user.sub, query.monthYear);
 
         res.status(200).send(result);
-    }
-
-    @Post()
-    async addExpenseCategory(
-        @Req() req: Request<any, any, AddExpenseCategoryRequestDto>,
-        @Res() res: Response<AddExpenseCategoryResponseDto>
-    ) {
-        const { body } = req;
-        const categoryId = await this.expenseCategoryService.createCategory(body.name as string);
-
-        res.status(200).send({id: categoryId});
     }
 
     @Post()

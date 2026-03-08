@@ -7,6 +7,9 @@ body {
   box-sizing: border-box;
   width: 100%;
   height: 100vh;
+
+  --submit-btn-bg-gradient-1: #368230;
+  --submit-btn-bg-gradient-2: #1f9217;
 }
 
 #root {

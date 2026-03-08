@@ -85,4 +85,4 @@ volumes:
 
 secrets:
   db-credentials:
-    file: ./apps/backend/main-app/secrets/db_credentials.env
+    file: ./secrets/db_credentials.env

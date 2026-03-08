@@ -8,6 +8,7 @@ import type { AccordionData } from '../components/accordion';
 import Accordion from '../components/accordion';
 import './dashboard.css';
 import Dialog, { type DialogRef } from '../components/dialog';
+import { useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent
@@ -71,6 +72,16 @@ const dummyAccordionData: AccordionData[] = [{
     ]
 }];
 
+interface IAddExpenseFormState {
+  name: string;
+  category: number;
+  description: Date;
+  amount: number;
+  currency: string;
+  isRecurring: boolean;
+  billImage?: File | null;
+}
+
 function RouteComponent() {
   // Context
   const {userData, logoutUser} = useContext(AuthContext);
@@ -84,6 +95,13 @@ function RouteComponent() {
 
   const dialogRef = useRef<DialogRef>(null);
 
+  const {
+      register,
+      handleSubmit,
+      watch,
+      formState: { errors }
+    } = useForm<IAddExpenseFormState>();
+
   useEffect(() => {
     console.log("use effect");
 
@@ -91,6 +109,14 @@ function RouteComponent() {
       console.log("use effect cleanup");
     }
   }, []);
+
+  const onAddExpenseSubmit = () => {
+    console.log("Form data:", watch());
+  }
+
+  const onAddExpenseDialogClose = () => {
+    dialogRef.current?.close();
+  }
 
   const onPrevMonthClick = () => {
     let prevMonthDate = new Date(currDate.getFullYear(), currDate.getMonth() - 1, 1);
@@ -155,8 +181,77 @@ function RouteComponent() {
         </Calendar>
       </section>
 
-      <Dialog ref={dialogRef} title="Sample Dialog" isOpen={false} onClose={() => {}}>
-        <p>This is a sample dialog content.</p>
+      <Dialog 
+        ref={dialogRef} 
+        title="Add expense" 
+        isOpen={false} 
+        onClose={() => {}}
+        footer={() => {
+          return (<div className='flex justify-around items-center gap-2'>
+            <input type="submit" 
+              className='submit-btn'
+              onClick={handleSubmit(onAddExpenseSubmit)}
+              // disabled={loginUser?.status === 'pending'}
+              value="Submit" 
+            />
+            <button type="button" className="dialog-footer-button" onClick={onAddExpenseDialogClose}>
+                Close
+            </button>
+          </div>)
+        }}
+      >
+        <form>
+          <fieldset>
+            <section className='input-section'>
+              <label htmlFor="name" className='flex-1 w-50 font-bold'>Name:</label>
+              <input type="text" placeholder='Enter name' id='name'
+                  className={errors.name ? 'border-red-500 flex-2' : 'flex-2'} 
+                  {...register("name", { required: true })}
+              />
+            </section>
+
+            <section className='input-section'>
+              <label htmlFor="category" className='flex-1 w-50 font-bold'>Category:</label>
+              <input type="text" placeholder='Enter category' id='category'
+                  className={errors.category ? 'border-red-500 flex-2' : 'flex-2'} 
+                  {...register("category", { required: true })}
+              />
+            </section>
+
+            <section className='input-section'>
+              <label htmlFor="description" className='flex-1 w-50 font-bold'>Description:</label>
+              <input type="text" placeholder='Enter description' id='description'
+                  className={errors.description ? 'border-red-500 flex-2' : 'flex-2'} 
+                  {...register("description", { required: true })}
+              />
+            </section>
+
+            <section className='input-section'>
+              <label htmlFor="amount" className='flex-1 w-50 font-bold'>Amount:</label>
+              <input type="number" placeholder='Enter amount' id='amount'
+                  min={0} step={0.01}
+                  className={errors.amount ? 'border-red-500 flex-2' : 'flex-2'} 
+                  {...register("amount", { required: true })}
+              />
+            </section>
+
+            <section className='input-section'>
+              <label htmlFor="currency" className='flex-1 w-50 font-bold'>Currency:</label>
+              <input type="text" placeholder='Enter currency' id='currency'
+                  className={errors.currency ? 'border-red-500 flex-2' : 'flex-2'} 
+                  {...register("currency", { required: true })}
+              />
+            </section>
+
+            <section className='input-section left-0'>
+              <label htmlFor="isRecurring" className='flex-1 w-50 font-bold'>Is Recurring:</label>
+              <input type="checkbox" id='isRecurring'
+                  className={errors.isRecurring ? 'border-red-500 flex-2' : 'flex-2'} 
+                  {...register("isRecurring", { required: true })}
+              />
+            </section>
+          </fieldset>
+        </form>
       </Dialog>
 
       <footer className='row-span-1 col-span-1 flex justify-center items-center'>

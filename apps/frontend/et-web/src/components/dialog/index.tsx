@@ -13,6 +13,7 @@ type DialogProps = {
     isOpen: boolean;
     onClose: () => void;
     children: React.ReactNode;
+    footer: () => React.ReactNode;
 };
 
 function Dialog(props: DialogProps, ref: React.Ref<DialogRef>) {
@@ -41,7 +42,9 @@ function Dialog(props: DialogProps, ref: React.Ref<DialogRef>) {
             <div className="dialog-content">
                 <DialogHeader title={props.title} onClose={handleClose} />
                 {props.children}
-                <DialogFooter onClose={handleClose} />
+                <DialogFooter onClose={handleClose}>
+                    {props.footer ? props.footer() : null}
+                </DialogFooter>
             </div>
         </div>
     );
