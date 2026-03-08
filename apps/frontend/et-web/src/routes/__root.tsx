@@ -21,6 +21,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       return;
     }
 
+    if(normalizePath(location.pathname) === "/" && context.verifyTokenResponse) {
+      throw redirect({
+        to: "/dashboard",
+      });
+    }
+
     if (!context.verifyTokenResponse) {
       console.log("User is not authenticated. Redirecting to login page.");
       throw redirect({
