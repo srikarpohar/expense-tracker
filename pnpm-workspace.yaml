@@ -6,3 +6,7 @@ packages:
 syncInjectedDepsAfterScripts:
   - build
 injectWorkspacePackages: true
+catalog:
+  typescript: 5.7.3
+  ts-node: ^10.9.2
+  "@types/node": 25.3.5

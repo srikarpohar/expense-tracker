@@ -10,12 +10,11 @@ Made using React, NestJS.
 # TODO:
 
 - Frontend changes
-    1.1. Add expense dialog
+    1.1. Add expense category and currency dropdown in add expense dialog.
     1.2. Showing expenses based on date in calendar.
 
 - Backend changes
-    2.1. Add expense API.
-    2.2. Get expenses API.
+    2.1. Get expenses API.
 
 - Docker build
     1. Check docker compose issues
