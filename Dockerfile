@@ -1,15 +1,11 @@
 # Start from a lightweight Node.js image.
 # Base stage: Set nodejs image as base and set the working directory in this stage.
-FROM node:20-alpine AS base
+FROM dhi.io/node:20-alpine3.23-dev AS base
 # Set environment variables for pnpm, enable corepack for installing pnpm when required, and add pnpm to the PATH.
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 RUN npm install -g typescript
-# Set the working directory in the container and copy the package.json file first for installing dependencies.
-# This allows Docker to cache the layer with installed dependencies, so if package.json doesn't change, 
-# it won't need to reinstall dependencies on subsequent builds.
-WORKDIR /app
 
 # Shared service: build the shared service for both frontend and backend.
 FROM base AS shared-dev
@@ -39,11 +35,13 @@ COPY apps/backend/main-app/package.json ./
 RUN pnpm install
 
 COPY apps/backend/main-app ./
-# COPY apps/backend/main-app/src ./src
 
 WORKDIR /app
 EXPOSE 3000
+
+# Debugger PORT.
 EXPOSE 9229
+
 CMD ["pnpm", "run", "et-backend", "start:debug"]
 
 # frontend service: build the frontend service using the shared service.
