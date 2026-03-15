@@ -19,6 +19,27 @@ type DialogProps = {
 function Dialog(props: DialogProps, ref: React.Ref<DialogRef>) {
     const [visible, setVisible] = useState(props.isOpen);
 
+    const handleClick = (e: any) => {
+        const isClickInsideDialog = (e.target as HTMLElement).closest("[data-dialog-content='true']");
+        const isClickOnDialogContainer = (e.target as HTMLElement).closest("[data-dialog-container='true']");
+
+        if (!isClickOnDialogContainer) {
+            return;
+        }
+
+        if (!isClickInsideDialog) {
+            handleClose();
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener("click", handleClick);
+
+        return () => {
+            document.removeEventListener("click", handleClick);
+        };
+    }, []);
+
     useEffect(() => {
         setVisible(props.isOpen);
     }, [props.isOpen]);
@@ -38,8 +59,8 @@ function Dialog(props: DialogProps, ref: React.Ref<DialogRef>) {
     }
 
     return (
-        <div className="dialog-container">
-            <div className="dialog-content">
+        <div className="dialog-container" data-dialog-container="true">
+            <div className="dialog-content" data-dialog-content="true">
                 <DialogHeader title={props.title} onClose={handleClose} />
                 {props.children}
                 <DialogFooter onClose={handleClose}>

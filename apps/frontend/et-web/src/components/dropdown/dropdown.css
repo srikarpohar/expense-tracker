@@ -1,0 +1,28 @@
+
+
+.dropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    z-index: 10;
+    max-height: 300px;
+    overflow: auto;
+    border: 1px solid rgba(0,0,0,0.2);
+    background-color: #ffffff;
+    border-radius: 0.3rem;
+    padding: 0.5rem;
+}
+
+.option {
+    border-radius: 0.2rem;
+    padding: 0.5rem;
+
+    &:hover {
+        background-color: rgba(0,0,0,0.1);
+    }
+}

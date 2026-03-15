@@ -11,6 +11,7 @@ import Dialog, { type DialogRef } from '../components/dialog';
 import { useForm } from 'react-hook-form';
 import { axiosHttpApiRequestLayer } from '../api-layer/base.service';
 import { ExpenseType, type AddExpenseCategoryRequestDto, type AddExpenseRequestDto, type AddExpenseResponseDTO, type GetCalendarDataRequest, type GetCalendarDataResponse } from 'expense-tracker-shared';
+import { Dropdown } from '../components/dropdown';
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent
@@ -151,7 +152,7 @@ function RouteComponent() {
 
   const onAddExpenseSubmit = () => {
     console.log("Form data:", watch());
-    axiosHttpApiRequestLayer.post<AddExpenseRequestDto, AddExpenseResponseDTO>("/expense", {
+    axiosHttpApiRequestLayer.post<AddExpenseRequestDto, AddExpenseResponseDTO>("/dashboard", {
       name: watch().name,
       category_name: watch().category,
       category_description: watch().description,
@@ -188,10 +189,25 @@ function RouteComponent() {
       style={{"--tw-grid-cols": minimiseFilters ? '10px 1fr' : '350px 1fr' } as React.CSSProperties}>
 
       <header className='row-start-1 col-span-2 flex justify-center items-center p-3 border-b-2 border-gray-100'>
-        <h1 className='text-[24px]! font-bold text-gray-800 m-0'>Welcome, {userData?.username}!</h1>
+        <h1 className='flex-1 text-center text-[24px]! font-bold text-gray-800 m-0'>Welcome, {userData?.username}!</h1>
+        <Dropdown toggleId='profile'
+          header={() => (
+            <div className='flex items-center gap-2 cursor-pointer mr-4'>
+              <img src={`https://ui-avatars.com/api/?name=${userData?.username}&background=0D8ABC&color=fff`} 
+                alt="Profile Image" width={40} height={40} 
+                className='border-2 border-sky-500 rounded-[50%]'/>
+            </div>
+          )}
+          options={["Logout"]}
+          onSelect={(option: string) => {
+            if(option === "Logout") {
+              logoutUser?.();
+            }
+          }}
+        />
       </header>
 
-      <section className={`left-container p-2 
+      {/* <section className={`left-container p-2 
         row-start-2 row-span-3 col-start-1 col-span-1 
         border-t-0 border-b-0 border-(length:--tw-border) border-gray-200
         flex flex-col justify-center items-center`}
@@ -218,9 +234,9 @@ function RouteComponent() {
               Logout
             </button>
         </Activity>
-      </section>
+      </section> */}
 
-      <section className='row-span-1 col-span-1 flex justify-between items-center mb-2 p-2'>
+      <section className='row-span-1 col-start-1 col-span-2 flex justify-between items-center mb-2 p-2'>
         <CalendarHeader date={currDate} onPrevMonthClick={onPrevMonthClick} onNextMonthClick={onNextMonthClick} />
 
         <button className='p-2 flex justify-between items-center gap-2 bg-blue-500 text-white rounded-md cursor-pointer'
@@ -230,7 +246,7 @@ function RouteComponent() {
         </button>
       </section>
 
-      <section className='row-span-1 col-span-1 flex justify-center items-center'>
+      <section className='row-span-1 col-start-1 col-span-2 flex justify-center items-center'>
         <Calendar date={currDate} type='month' renderCell={(date: string) => {
           return (
             <p>{calendarData[date]?.currencyData[0]?.totalAmount} {calendarData[date]?.currencyData[0]?.currency}</p>
@@ -321,14 +337,14 @@ function RouteComponent() {
               <label htmlFor="isRecurring" className='flex-1 w-50 font-bold'>Is Recurring:</label>
               <input type="checkbox" id='isRecurring'
                   className={errors.isRecurring ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("isRecurring", { required: true })}
+                  {...register("isRecurring")}
               />
             </section>
           </fieldset>
         </form>
       </Dialog>
 
-      <footer className='row-span-1 col-span-1 flex justify-center items-center'>
+      <footer className='row-span-1 col-start-1 col-span-2 flex justify-center items-center'>
         <p>Footer section</p>
       </footer>
     </div>

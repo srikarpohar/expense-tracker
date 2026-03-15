@@ -9,38 +9,49 @@ import type { IApiResponse } from "../../types/api.types";
 
 const AUTH_TOKEN_STORAGE_KEY = "authToken";
 const VERIFY_TOKEN_RESPONSE_KEY = "verifyTokenResponse";
-const VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY = "verifyTokenResponseUpdatedAt";
+// const VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY = "verifyTokenResponseUpdatedAt";
 
 const isBrowser = () => typeof window !== "undefined";
 
-const persistAuthToken = (token: string) => {
-  if (!isBrowser()) return;
-  window.localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
-};
+// const persistAuthToken = (token: string) => {
+//   if (!isBrowser()) return;
+//   window.localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+// };
 
-const clearAuthToken = () => {
-  if (!isBrowser()) return;
-  window.localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
-};
+// const clearAuthToken = () => {
+//   if (!isBrowser()) return;
+//   window.localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+// };
 
 const persistVerifyTokenResponse = (response: VerifyTokenResponseDTO) => {
   if (!isBrowser()) return;
-  window.localStorage.setItem(VERIFY_TOKEN_RESPONSE_KEY, JSON.stringify(response));
-  window.localStorage.setItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY, Date.now().toString());
+  const authTokenDuration = parseInt(process.env.AUTH_TOKEN_DURATION || '0');
+  window.localStorage.setItem(VERIFY_TOKEN_RESPONSE_KEY, JSON.stringify({
+    ...response,
+    expiryTime: Date.now() + authTokenDuration * 1000,
+  }));
+  // window.localStorage.setItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY, Date.now().toString());
 };
 
 const clearVerifyTokenResponse = () => {
   if (!isBrowser()) return;
   window.localStorage.removeItem(VERIFY_TOKEN_RESPONSE_KEY);
-  window.localStorage.removeItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY);
+  // window.localStorage.removeItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY);
 };
 
-const readVerifyTokenResponseFromStorage = (): VerifyTokenResponseDTO | null => {
+const readVerifyTokenResponseFromStorage = (): (VerifyTokenResponseDTO & { expiryTime: number }) | null => {
   if (!isBrowser()) return null;
   const storedValue = window.localStorage.getItem(VERIFY_TOKEN_RESPONSE_KEY);
   if (!storedValue) return null;
   try {
-    return JSON.parse(storedValue) as VerifyTokenResponseDTO;
+    const userData = JSON.parse(storedValue) as (VerifyTokenResponseDTO & { expiryTime: number });
+    // Check if the token has expired from the token's expiry time.
+    if (Date.now() > userData.expiryTime) {
+      clearVerifyTokenResponse();
+      return null;
+    }
+
+    return userData;
   } catch (error) {
     clearVerifyTokenResponse();
     return null;
@@ -50,29 +61,20 @@ const readVerifyTokenResponseFromStorage = (): VerifyTokenResponseDTO | null => 
 const getInitialVerifyTokenData = () => {
   const response = readVerifyTokenResponseFromStorage();
   if (!response) {
-    return {
-      initialData: undefined,
-      initialDataUpdatedAt: undefined,
-    };
+    return;
   }
 
   if (!isBrowser()) {
-    return {
-      initialData: response,
-      initialDataUpdatedAt: undefined,
-    };
+    return response;
   }
 
-  const updatedAtRaw = window.localStorage.getItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY);
-  const updatedAt = updatedAtRaw ? Number(updatedAtRaw) : Date.now();
-  return {
-    initialData: response,
-    initialDataUpdatedAt: updatedAt,
-  };
+  // const updatedAtRaw = window.localStorage.getItem(VERIFY_TOKEN_RESPONSE_UPDATED_AT_KEY);
+  // const updatedAt = updatedAtRaw ? Number(updatedAtRaw) : Date.now();
+  return response;
 };
 
 const resetStoredAuthData = () => {
-  clearAuthToken();
+  // clearAuthToken();
   clearVerifyTokenResponse();
 };
 
@@ -87,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyToken = async (): Promise<VerifyTokenResponseDTO> => {
     try {
-      const data = getInitialVerifyTokenData().initialData;
+      const data = getInitialVerifyTokenData();
       let payload = data?.payload;
       if(payload) {
         setUserData({
@@ -105,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         username: payload.username,
       });
       router.update({ context: { verifyTokenResponse: response.data } });
-      persistVerifyTokenResponse(response.data);
+      // persistVerifyTokenResponse(response.data);
       return response.data;
     } catch (error: any) {
       console.log(`Error while verifying token: ${error.message}`);
@@ -165,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
         isLoading: false,
       };
-      persistAuthToken(response.token);
+      // persistAuthToken(response.token);
       persistVerifyTokenResponse(cachedVerifyTokenResponse.data);
       queryClient.setQueryData(["verify-token"], cachedVerifyTokenResponse);
       setUserData(response.payload);
