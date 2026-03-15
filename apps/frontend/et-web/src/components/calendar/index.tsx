@@ -23,12 +23,12 @@ export const WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thurshday", "F
 type ICalendarProps = {
     date: Date,
     type: "month";
-    children?: React.ReactNode;
+    renderCell?: (date: string) => React.ReactNode;
 }
 
 type DateCell = {
     date: number;
-    isDateInMonth?: boolean;
+    isDateInCurrMonth?: boolean;
 }
 
 function Calendar(props: ICalendarProps) {
@@ -64,7 +64,7 @@ function Calendar(props: ICalendarProps) {
 
             week.push({
                 date: currDayNo,
-                isDateInMonth: dayCounter >=0 && dayCounter < daysInMonth
+                isDateInCurrMonth: dayCounter >=0 && dayCounter < daysInMonth
             })
             
             dayCounter++;
@@ -80,7 +80,6 @@ function Calendar(props: ICalendarProps) {
         {WEEK.map((week, index) => (
         <div className='row-start-1 date-container p-2 flex justify-center items-center' key={"week0day" + index}>
             <CalendarCell date={week.substring(0, 3)} isHeader>
-                {props.children}
             </CalendarCell>
         </div>
         ))}
@@ -91,7 +90,7 @@ function Calendar(props: ICalendarProps) {
                 <div key={`week-${wkIndex + 1}_day-${dayIndex}`} 
                     className={`row-start-${wkIndex + 2} date-container p-2`}>
                     <CalendarCell date={col.date.toString()}>
-                        {props.children}
+                        {props.renderCell && props.renderCell(col.date.toString())}
                     </CalendarCell>
                 </div>
               ))

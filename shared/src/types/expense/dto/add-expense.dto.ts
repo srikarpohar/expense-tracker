@@ -10,7 +10,8 @@ export type AddExpenseRequestDto = {
     currency: string,
     type: ExpenseType,
     recurring_frequency?: RecurringExpenseFrequency,
-    bill_image?: File
+    bill_image?: File;
+    date?: Date;
 }
 
 export interface AddExpenseResponseDTO {

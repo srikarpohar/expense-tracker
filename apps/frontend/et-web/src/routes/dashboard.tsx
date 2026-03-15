@@ -9,6 +9,8 @@ import Accordion from '../components/accordion';
 import './dashboard.css';
 import Dialog, { type DialogRef } from '../components/dialog';
 import { useForm } from 'react-hook-form';
+import { axiosHttpApiRequestLayer } from '../api-layer/base.service';
+import { ExpenseType, type AddExpenseCategoryRequestDto, type AddExpenseRequestDto, type AddExpenseResponseDTO, type GetCalendarDataRequest, type GetCalendarDataResponse } from 'expense-tracker-shared';
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent
@@ -74,12 +76,24 @@ const dummyAccordionData: AccordionData[] = [{
 
 interface IAddExpenseFormState {
   name: string;
-  category: number;
-  description: Date;
+  category: string;
+  description: string;
   amount: number;
   currency: string;
   isRecurring: boolean;
+  notes: string;
   billImage?: File | null;
+  date?: string;
+}
+
+interface ICalendarData {
+  [key: string]: {
+    date: string;
+    currencyData: {
+      totalAmount: number;
+      currency: string;
+    }[]
+  }
 }
 
 function RouteComponent() {
@@ -91,6 +105,7 @@ function RouteComponent() {
   const [minimiseFilters, setMinimiseFilters] = useState(false);
 
   // Dummy data for accordion
+  const [calendarData, setCalendarData] = useState<ICalendarData>({});
   const [accordionData, setAccordionData] = useState<AccordionData[]>(dummyAccordionData);
 
   const dialogRef = useRef<DialogRef>(null);
@@ -100,10 +115,34 @@ function RouteComponent() {
       handleSubmit,
       watch,
       formState: { errors }
-    } = useForm<IAddExpenseFormState>();
+    } = useForm<IAddExpenseFormState>({
+      defaultValues: {
+        name: '',
+        category: "Food",
+        description: '',
+        amount: 0,
+        currency: '',
+        isRecurring: false,
+        date: new Date().toString()
+      }
+    });
 
   useEffect(() => {
     console.log("use effect");
+    axiosHttpApiRequestLayer.get<GetCalendarDataRequest, GetCalendarDataResponse[]>('/dashboard', {
+      monthYear: `${currDate.getMonth() + 1}/${currDate.getFullYear()}`,
+    }).then((response) => {
+      setCalendarData(response.data.reduce((acc, curr) => {
+        acc[curr.date] = {
+          date: curr.date,
+          currencyData: curr.currencyData,
+        }
+        return acc;
+      }, {} as ICalendarData));
+      console.log("Dashboard data: ", response.data);
+    }).catch((error) => {
+      console.log("Error while fetching dashboard data: ", error);
+    });
 
     return () => {
       console.log("use effect cleanup");
@@ -112,6 +151,22 @@ function RouteComponent() {
 
   const onAddExpenseSubmit = () => {
     console.log("Form data:", watch());
+    axiosHttpApiRequestLayer.post<AddExpenseRequestDto, AddExpenseResponseDTO>("/expense", {
+      name: watch().name,
+      category_name: watch().category,
+      category_description: watch().description,
+      amount: watch().amount,
+      currency: watch().currency,
+      notes: watch().notes,
+      // recurring_frequency: watch().isRecurring,
+      type: ExpenseType.DEBIT,
+      date: new Date(watch().date || ""),
+    }).then((response) => {
+      console.log("Expense added successfully: ", response.data);
+      dialogRef.current?.close();
+    }).catch((error) => {
+      console.log("Error while adding expense: ", error);
+    });
   }
 
   const onAddExpenseDialogClose = () => {
@@ -176,8 +231,11 @@ function RouteComponent() {
       </section>
 
       <section className='row-span-1 col-span-1 flex justify-center items-center'>
-        <Calendar date={currDate} type='month'>
-          <p>Calendar component</p>
+        <Calendar date={currDate} type='month' renderCell={(date: string) => {
+          return (
+            <p>{calendarData[date]?.currencyData[0]?.totalAmount} {calendarData[date]?.currencyData[0]?.currency}</p>
+          )
+        }}>
         </Calendar>
       </section>
 
@@ -240,6 +298,22 @@ function RouteComponent() {
               <input type="text" placeholder='Enter currency' id='currency'
                   className={errors.currency ? 'border-red-500 flex-2' : 'flex-2'} 
                   {...register("currency", { required: true })}
+              />
+            </section>
+
+            <section className='input-section'>
+              <label htmlFor="date" className='flex-1 w-50 font-bold'>Date:</label>
+              <input type="date" placeholder='Enter date' id='date'
+                  className={errors.date ? 'border-red-500 flex-2' : 'flex-2'} 
+                  {...register("date", { required: true })}
+              />
+            </section>
+
+            <section className='input-section'>
+              <label htmlFor="notes" className='flex-1 w-50 font-bold'>Notes:</label>
+              <textarea placeholder='Enter notes' id='notes'
+                  className={[errors.notes ? 'border-red-500 flex-2' : 'flex-2', 'border-1 rounded-sm p-2'].join(' ')} 
+                  {...register("notes", { required: true })}
               />
             </section>
 

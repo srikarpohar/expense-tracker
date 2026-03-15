@@ -3,5 +3,9 @@ export interface GetCalendarDataRequest {
 }
 
 export interface GetCalendarDataResponse {
-    message: string;
+    date: string;
+    currencyData: {
+        totalAmount: number;
+        currency: string;
+    }[]
 }
