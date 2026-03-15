@@ -88,7 +88,6 @@ export const up = (pgm) => {
             type expense_type NOT NULL,
 
             created_at TIMESTAMP DEFAULT NOW(),
-            created_by INT NOT NULL,
             deleted_at TIMESTAMP DEFAULT NULL,
             
             paid_on TIMESTAMP,

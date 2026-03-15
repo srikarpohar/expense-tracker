@@ -12,21 +12,21 @@ export class DashboardController {
         private readonly expenseCategoryService: ExpenseCategoryService
     ) {}
     
-    @Get()
-    getDashboard(
+    @Get("")
+    async getDashboard(
         @Req() req: Request<any, any, any, GetCalendarDataRequest>,
-        @Res() res: Response<GetCalendarDataResponse>
+        @Res() res: Response<GetCalendarDataResponse[]>
     ) {
         console.log("User info from token:", req["user"]);
 
         const { query } = req;
         const user = req["user"] as IUserPayload;
-        const result = this.dashboardService.getCalendarData(user.sub, query.monthYear);
+        const result = await this.dashboardService.getCalendarData(user.sub, query.monthYear);
 
         res.status(200).send(result);
     }
 
-    @Post()
+    @Post("")
     async addExpense(
         @Req() req: Request<any, any, AddExpenseRequestDto, any, {user: IUserPayload}>,
         @Res() res: Response<AddExpenseResponseDTO>

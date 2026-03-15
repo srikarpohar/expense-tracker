@@ -1,5 +1,5 @@
 import { BadRequestException, HttpStatus, InternalServerErrorException } from "@nestjs/common";
-import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, getCurrencyFromCode, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-shared";
+import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, GetCalendarDataResponse, getCurrencyFromCode, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-shared";
 import { PgDatabaseConnectionService } from "src/shared/database/db.connection";
 import { ExpenseHistoryService } from "../expense-history.service";
 import { ExpenseCategoryService } from "../expense-category/expense-category.service";
@@ -14,10 +14,57 @@ export class DashboardService {
         private userTransactionsService: UserTransactionsService
     ) {}
 
-    getCalendarData(user: number, monthYear: string) {
-        console.log(user, monthYear);
+    async getCalendarData(user_id: number, monthYear: string) {
+        console.log(user_id, monthYear);
+        const [month, year] = monthYear.split("/").map(doc => Number(doc));
 
-        return { message: "Welcome to the Expense Dashboard!" };
+        const result: {
+            created_at: Date, 
+            grouped_result: {
+                currency: string, 
+                total_amount: number, 
+                created_at: Date
+            }[]
+        }[] = await this.dbConnection.sqlInstance`
+            WITH currency_grouping AS (
+              SELECT created_at, currency, SUM(amount) total_amount FROM expense 
+              WHERE user_id = ${user_id}
+              AND created_at BETWEEN ${this.dbConnection.sqlInstance(`${year}-${month}-01`)} AND ${this.dbConnection.sqlInstance(`${year}-${month}-31`)}
+              GROUP BY created_at, currency
+            )
+            SELECT created_at, ARRAY_AGG(currency_grouping) grouped_result
+            FROM currency_grouping
+            GROUP BY created_at
+            ORDER BY created_at;
+        `;
+        // SELECT created_at, currency, SUM(amount) total_amount FROM expense WHERE user_id = ${user_id} 
+        //     AND created_at BETWEEN ${this.dbConnection.sqlInstance(`${year}-${month}-01`)} 
+        //     AND ${this.dbConnection.sqlInstance(`${year}-${month}-31`)} 
+
+        // const finalResult: {[key: string]: GetCalendarDataResponse} = {};
+        const finalResult: GetCalendarDataResponse[] = [];
+        for(const row of result) {
+            const date = `${row.created_at.getDate()}/${row.created_at.getMonth()}/${row.created_at.getFullYear()}`;
+            finalResult.push({
+                date: date,
+                currencyData: row.grouped_result.map(doc => ({
+                    currency: doc.currency,
+                    totalAmount: doc.total_amount
+                }))
+            })
+
+            // const currencyIndex = finalResult[date].currencyData.findIndex(doc => doc.currency == row.currency);
+            // if(currencyIndex == -1) {
+            //     finalResult[date].currencyData.push({
+            //         currency: row.currency,
+            //         totalAmount: row.total_amount
+            //     })
+            // } else {
+            //     finalResult[date].currencyData[currencyIndex].totalAmount += row.total_amount;
+            // }
+        }
+
+        return Object.values(finalResult);
     }
 
     async addExpense(data: AddExpenseRequestDto, user: IUserPayload): Promise<IExpense> {
@@ -46,7 +93,8 @@ export class DashboardService {
                 currency: currency.currency,
                 name: data.name,
                 type: data.type,
-                notes: data.notes
+                notes: data.notes,
+                created_at: data.date ? data.date : new Date()
             }
     
             expense = await this.dbConnection.sqlInstance`
