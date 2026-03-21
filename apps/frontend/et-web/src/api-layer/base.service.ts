@@ -35,7 +35,7 @@ export class AxiosHttpApiRequestLayer implements IHTTPClient {
     headers?: AxiosHeaders | {},
     abortSignal?: AbortSignal,
   ): Promise<IApiResponse<R>> {
-    let config: AxiosRequestConfig = {
+    const config: AxiosRequestConfig = {
       params: queryParams,
       headers: headers as AxiosHeaders,
       withCredentials: true,

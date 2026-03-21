@@ -263,7 +263,7 @@ function RouteComponent() {
         footer={() => {
           return (<div className='flex justify-around items-center gap-2'>
             <input type="submit" 
-              className='submit-btn'
+              className='button--submit'
               onClick={handleSubmit(onAddExpenseSubmit)}
               // disabled={loginUser?.status === 'pending'}
               value="Submit" 

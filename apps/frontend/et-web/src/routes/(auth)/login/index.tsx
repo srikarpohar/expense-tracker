@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { Activity, useContext } from 'react'
-import "./login.css";
+import "../common.css";
 import { useMutation } from '@tanstack/react-query';
 import { axiosHttpApiRequestLayer } from '../../../api-layer/base.service';
 import type { LoginUserRequestDto, LoginUserResponseDto } from 'expense-tracker-shared';

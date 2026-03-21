@@ -17,7 +17,7 @@ export default defineConfig([
     },
     ignores: ["./routeTree.gen.ts", "build/dist/index.js"],
     rules: {
-      ...tseslint.configs.recommended.rules,
+      ...tseslint.configs.eslintRecommended.rules,
       ...prettierConfig.rules,
       "@/no-unused-vars": "warn",
       "no-console": "off",
