@@ -17,7 +17,7 @@ export class DashboardController {
         @Req() req: Request<any, any, any, GetCalendarDataRequest>,
         @Res() res: Response<GetCalendarDataResponse[]>
     ) {
-        console.log("User info from token:", req["user"]);
+        // console.log("User info from token:", req["user"]);
 
         const { query } = req;
         const user = req["user"] as IUserPayload;

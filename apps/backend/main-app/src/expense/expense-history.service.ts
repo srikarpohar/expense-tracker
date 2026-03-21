@@ -1,6 +1,8 @@
+import { Injectable } from "@nestjs/common";
 import { IExpenseHistory, IUserPayload } from "expense-tracker-shared";
 import { PgDatabaseConnectionService } from "src/shared/database/db.connection";
 
+@Injectable()
 export class ExpenseHistoryService {
     constructor(
         private readonly dbConnection: PgDatabaseConnectionService

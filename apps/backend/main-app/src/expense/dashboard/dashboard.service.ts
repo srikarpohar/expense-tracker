@@ -1,75 +1,74 @@
-import { BadRequestException, HttpStatus, InternalServerErrorException } from "@nestjs/common";
-import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, GetCalendarDataResponse, getCurrencyFromCode, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-shared";
+import { BadRequestException, HttpStatus, Inject, InternalServerErrorException } from "@nestjs/common";
+import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, GetCalendarDataResponse, getCurrencyCodeFromCurrency, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-shared";
 import { PgDatabaseConnectionService } from "src/shared/database/db.connection";
 import { ExpenseHistoryService } from "../expense-history.service";
 import { ExpenseCategoryService } from "../expense-category/expense-category.service";
 import { UserTransactionsService } from "src/users/user-transactions/user-transactions.service";
 
 export class DashboardService {
+    @Inject()
+    private readonly dbConnection: PgDatabaseConnectionService;
+    @Inject()
+    private readonly expenseCategoryService: ExpenseCategoryService;
+    @Inject()
+    private readonly expenseHistoryService: ExpenseHistoryService;
+    @Inject()
+    private readonly userTransactionsService: UserTransactionsService
 
-    constructor(
-        private dbConnection: PgDatabaseConnectionService,
-        private expenseHistoryService: ExpenseHistoryService,
-        private expenseCategoryService: ExpenseCategoryService,
-        private userTransactionsService: UserTransactionsService
-    ) {}
+
+    constructor() {}
 
     async getCalendarData(user_id: number, monthYear: string) {
-        console.log(user_id, monthYear);
         const [month, year] = monthYear.split("/").map(doc => Number(doc));
+        const monthQueryString = month.toString().padStart(2, "0");
 
         const result: {
             created_at: Date, 
-            grouped_result: {
-                currency: string, 
-                total_amount: number, 
-                created_at: Date
-            }[]
+            currency: string,
+            total_amount: number
         }[] = await this.dbConnection.sqlInstance`
-            WITH currency_grouping AS (
-              SELECT created_at, currency, SUM(amount) total_amount FROM expense 
-              WHERE user_id = ${user_id}
-              AND created_at BETWEEN ${this.dbConnection.sqlInstance(`${year}-${month}-01`)} AND ${this.dbConnection.sqlInstance(`${year}-${month}-31`)}
-              GROUP BY created_at, currency
-            )
-            SELECT created_at, ARRAY_AGG(currency_grouping) grouped_result
-            FROM currency_grouping
-            GROUP BY created_at
-            ORDER BY created_at;
+            SELECT created_at, currency, SUM(amount) total_amount FROM expense 
+            WHERE user_id = ${user_id} 
+            AND created_at BETWEEN ${`${year}-${monthQueryString}-01`} 
+            AND ${`${year}-${monthQueryString}-31`} 
+            GROUP BY created_at, currency
+            ORDER BY created_at, currency;
         `;
-        // SELECT created_at, currency, SUM(amount) total_amount FROM expense WHERE user_id = ${user_id} 
-        //     AND created_at BETWEEN ${this.dbConnection.sqlInstance(`${year}-${month}-01`)} 
-        //     AND ${this.dbConnection.sqlInstance(`${year}-${month}-31`)} 
 
-        // const finalResult: {[key: string]: GetCalendarDataResponse} = {};
         const finalResult: GetCalendarDataResponse[] = [];
+        let currencyData: {
+            totalAmount: number;
+            currency: string;
+        }[] = [], prevCreatedAt: string = "";
         for(const row of result) {
             const date = `${row.created_at.getDate()}/${row.created_at.getMonth()}/${row.created_at.getFullYear()}`;
-            finalResult.push({
-                date: date,
-                currencyData: row.grouped_result.map(doc => ({
-                    currency: doc.currency,
-                    totalAmount: doc.total_amount
-                }))
-            })
+            if(prevCreatedAt != date && prevCreatedAt != "") {
+                finalResult.push({
+                    date: date,
+                    currencyData: currencyData,
+                })
+                currencyData = [];
+            }
 
-            // const currencyIndex = finalResult[date].currencyData.findIndex(doc => doc.currency == row.currency);
-            // if(currencyIndex == -1) {
-            //     finalResult[date].currencyData.push({
-            //         currency: row.currency,
-            //         totalAmount: row.total_amount
-            //     })
-            // } else {
-            //     finalResult[date].currencyData[currencyIndex].totalAmount += row.total_amount;
-            // }
+            currencyData.push({
+                currency: row.currency,
+                totalAmount: row.total_amount
+            })
+            prevCreatedAt = date;
         }
 
-        return Object.values(finalResult);
+        if(result.length) {
+            finalResult.push({
+                date: prevCreatedAt,
+                currencyData: currencyData,
+            })
+        }
+        return finalResult;
     }
 
     async addExpense(data: AddExpenseRequestDto, user: IUserPayload): Promise<IExpense> {
         // Validate currency.
-        const currency = getCurrencyFromCode(data.currency);
+        const currency = getCurrencyCodeFromCurrency(data.currency);
         if(!currency) {
             throw new BadRequestException({
                 status: HttpStatus.BAD_REQUEST,
@@ -92,27 +91,19 @@ export class DashboardService {
                 amount: data.amount,
                 currency: currency.currency,
                 name: data.name,
-                type: data.type,
+                type: data.type || ExpenseType.DEBIT,
                 notes: data.notes,
                 created_at: data.date ? data.date : new Date()
             }
     
             expense = await this.dbConnection.sqlInstance`
                 INSERT INTO expense
-                ${this.dbConnection.sqlInstance(expenseDoc, ["amount", "category_id", "user_id", "currency", "name", "notes"])}
+                ${this.dbConnection.sqlInstance(expenseDoc, ["amount", "category_id", "user_id", "currency", "name", "notes", "type", "created_at"])}
                 RETURNING *
             `;
-            // Add log of expense in history table.
-            await this.expenseHistoryService.logExpenseAction(
-                {
-                    action: ExpenseLogActions.CREATED,
-                    expense_id: expense.at(0).id
-                },
-                user
-            );
-            // Add log of expense in user transactions table.
+
             const userTransactionDoc: IUserTransaction = {
-                expense_id: expense.expense_id,
+                expense_id: expense.at(0).expense_id,
                 user_id: user.sub,
                 is_recurring_expense: !!expenseDoc.recurring_frequency,
                 transaction_type: ExpenseType.DEBIT,
@@ -120,7 +111,7 @@ export class DashboardService {
             }
             await this.userTransactionsService.createUserTransaction(userTransactionDoc);
         } catch(error: any) {
-            console.log(`Error while creating expense: ${error}`);
+            console.log(`Error while creating expense: ${error.message}`);
             throw new InternalServerErrorException({
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 data: null,

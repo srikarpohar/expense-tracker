@@ -11,3 +11,15 @@ export const getCurrencyFromCode = (currencyCode: string): {currency: string, cu
         currencySymbol: currencyDoc?.currencySymbol
     }
 }
+
+export const getCurrencyCodeFromCurrency = (currencySymbol: string): {currency: string, currencyCode: string} | null => {
+    const currencyDoc = countries.find((country: any) => country.currencySymbol == currencySymbol);
+    if(!currencyDoc) {
+        return null;
+    }
+
+    return {
+        currency: currencyDoc?.currency,
+        currencyCode: currencyDoc?.code
+    }
+}

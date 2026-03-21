@@ -85,9 +85,10 @@ export class AuthService {
         }
 
         try {
+            const secretKey = this.configService.get<string>('jwt.secret');
             // Verify expiry time of the token.
             const payload = await this.jwtService.verifyAsync<IUserPayload>(token, {
-                secret: this.configService.get<string>('jwt.secret'),
+                secret: secretKey,
                 algorithms: ["HS256"],
             });
             return payload;

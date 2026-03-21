@@ -21,7 +21,7 @@ import { CacheManagerModule } from "src/shared/cache-manager/cache-manager.modul
                 secret: config.get<string>('jwt.secret'),
                 signOptions: {
                     algorithm: "HS256",
-                    expiresIn: config.get<number>('jwt.expiresIn') || 600
+                    expiresIn: Number(config.get<number>('jwt.expiresIn')) || 600
                 }
             }),
             inject: [ConfigService]
