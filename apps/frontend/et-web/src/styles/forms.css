@@ -1,0 +1,107 @@
+.l-form {
+    box-sizing: content-box;
+    width: inherit;
+}
+
+.c-form {
+    padding: var(--padding-container);
+    border: var(--border-width-thin) solid var(--border-color-medium);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    background-color: var(--bg-card);
+}
+
+.l-form__fieldset {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--gap-md);
+}
+
+.c-form__fieldset {
+    box-sizing: content-box;
+    border: none;
+}
+
+.l-form__input-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--gap-sm);
+    margin-bottom: var(--spacing-2);
+}
+
+.l-form__footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: var(--gap-md);
+}
+
+.l-form__action {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-1);
+}
+
+.l-input {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.c-input {
+    box-sizing: border-box;
+    background-color: var(--color-gray-100);
+    padding: var(--spacing-2);
+    border: var(--border-width-thin) solid var(--border-color-medium);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+}
+
+.l-input__field {
+    flex: 1;
+}
+
+.c-input__field {
+    border: none;
+    outline: none;
+    padding: 0 var(--spacing-2);
+    background: none;
+    font-size: var(--font-size-base);
+}
+
+.l-input-icon {
+    font-size: var(--font-size-base);
+}
+
+.c-input__icon--left {
+    border-radius: var(--radius-md);
+    color: var(--color-gray-500);
+}
+
+.l-input__icon--right {
+    color: var(--color-gray-500);
+}
+
+.c-input.has-error {
+    border: var(--border-width-thin) solid var(--color-error);
+}
+
+.l-input__label {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.c-input__label {
+    font-size: var(--font-size-sm);
+}
+

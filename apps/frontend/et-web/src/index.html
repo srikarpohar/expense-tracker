@@ -3,11 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <title>Expense tracker</title>
-    <meta http-equiv="content-security-policy" content="default-src 'self' script-src 'self' 
-      http://localhost:4200 
-      http://localhost:3000 
-      https://ui-avatars.com">
+
+    <!-- CSP Tag to whitelist origins required by the site to access. -->
+    <meta 
+      http-equiv="content-security-policy" 
+      content="default-src 'self' http://localhost:3000 https://ui-avatars.com;
+      script-src 'self' http://localhost:3000 https://ui-avatars.com;
+      style-src 'self' http://localhost:4200 https://fonts.googleapis.com;
+      font-src https://fonts.gstatic.com http://localhost:4200">
+    
+    <!-- Responsive design tag for fixing website display size to device size and prevent scale up/down -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./index.css" />
   </head>
   <body>

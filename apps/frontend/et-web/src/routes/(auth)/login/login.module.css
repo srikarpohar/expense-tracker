@@ -1,0 +1,32 @@
+.l-container {
+    margin: auto;
+    position: absolute;
+    min-width: 30rem;
+    min-height: 40vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+
+    & span {
+        position: absolute;
+        left: 50%;
+        transform: translate(-25%, 1rem) scale(1.1);
+        width: 100%;
+        vertical-align: middle;
+        font-size: var(--font-size-sm); 
+
+        &>a {
+            text-decoration: none;
+            color: var(--color-primary);
+        }
+    }
+}
+
+body {
+    background: var(--bg-page);
+}
+
+.l-eye {
+    cursor: pointer;
+}
+

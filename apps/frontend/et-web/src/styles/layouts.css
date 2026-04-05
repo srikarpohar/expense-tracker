@@ -1,0 +1,59 @@
+/* Container layout */
+.l-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 var(--padding-container);
+}
+
+@media (min-width: 640px) {
+  .l-container {
+    padding: 0 var(--padding-container-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .l-container {
+    padding: 0 var(--padding-container-lg);
+  }
+}
+
+/* Currency Cards Grid layout */
+.l-grid--currency {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-md);
+  margin-bottom: var(--spacing-8);
+}
+
+@media (min-width: 768px) {
+  .l-grid--currency {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Calendar Grid */
+.l-grid--calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--gap-xs);
+}
+
+.l-flex {
+    display: flex;
+    flex-direction: row;
+}
+
+.l-flex--center {
+    justify-content: center;
+    align-items: center;
+}
+
+.l-flex--between {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.l-flex--col {
+    display: flex;
+    flex-direction: column;
+}

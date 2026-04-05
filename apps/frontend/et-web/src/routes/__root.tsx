@@ -1,5 +1,6 @@
 import { createRootRouteWithContext, Outlet, redirect } from "@tanstack/react-router";
 import type { RouterContext } from "../routerContext";
+import "../styles/index.css";
 
 const PUBLIC_PATHS = new Set(["/login", "/signup"]);
 

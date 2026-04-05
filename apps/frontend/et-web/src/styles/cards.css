@@ -1,0 +1,114 @@
+/* Main Card (Calendar Container) */
+.o-card--main {
+  background: var(--bg-card);
+  border: var(--border-width-thin) solid var(--border-color-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  padding: var(--padding-card);
+}
+
+/* Currency Summary Card (Inactive) */
+.o-card--currency {
+  background: var(--bg-card);
+  padding: var(--padding-card);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-all);
+  cursor: pointer;
+  border: none;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Currency Summary Card (Active) */
+.o-card-currency.is-active {
+  background: var(--bg-card-active);
+  color: var(--color-white);
+  padding: var(--padding-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transform: var(--transform-scale-md);
+  transition: var(--transition-all);
+  cursor: pointer;
+  border: none;
+}
+
+/* Calendar Day cell Card */
+.c-calendar-day {
+  aspect-ratio: 1 / 1;
+  border: var(--border-width-thin) solid var(--border-color-light);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2);
+  transition: var(--transition-all);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Calendar day Today Card */
+.c-calendar-day--today {
+  aspect-ratio: 1 / 1;
+  border: var(--border-width-thin) solid var(--color-primary-border);
+  background: var(--color-primary-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2);
+  box-shadow: 0 0 0 var(--border-width-medium) var(--color-primary-ring);
+}
+
+/* Calendar Day Expense Cell Card */
+.c-calendar-day--expense {
+  aspect-ratio: 1 / 1;
+  border: var(--border-width-thin) solid var(--border-color-default);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2);
+  transition: var(--transition-all);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Expense Badge Mini Card */
+.c-expense-badge {
+  background: var(
+    --category-color
+  ); /* Dynamic based on category */
+  color: var(--color-white);
+  border-radius: var(--radius-sm);
+  padding: 0.125rem var(--spacing-1);
+  font-size: var(--font-size-expense);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: var(--transition-opacity);
+
+  &:hover {
+      opacity: var(--opacity-hover);
+  }
+}
+
+/* Category-specific badges */
+.c-expense-badge--food {
+  background: var(--color-food);
+}
+.c-expense-badge--transport {
+  background: var(--color-transport);
+}
+.c-expense-badge--shopping {
+  background: var(--color-shopping);
+}
+.c-expense-badge--bills {
+  background: var(--color-bills);
+}
+.c-expense-badge--entertainment {
+  background: var(--color-entertainment);
+}
+.c-expense-badge--other {
+  background: var(--color-other);
+}

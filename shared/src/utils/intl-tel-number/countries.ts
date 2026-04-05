@@ -1,13 +1,20 @@
 import { CountryCode } from 'libphonenumber-js';
 import countries from './countries.json';
 
-export type Country = typeof countries[number];
+export type Country = {
+    code: string;
+    name: string;
+    phoneCode: string;
+    currency: string;
+    currencySymbol: string;
+    icon: string;
+};
 
 /**
  * Get full country list
  */
-export const getCountries = () => {
-    return countries;
+export const getCountries = (): Country[] => {
+    return countries as Country[];
 };
 
 /**

@@ -1,0 +1,105 @@
+.l-button {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Primary Button */
+.o-button--primary {
+  background: var(--color-primary);
+  /* linear-gradient(to bottom, var(--color-transport), var(--color-primary)); */
+  color: var(--color-white);
+  padding: var(--padding-button-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-all);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-transform);
+
+  &:hover {
+    background: linear-gradient(to bottom, var(--color-primary), var(--color-primary-hover));
+    /* transform: scale(var(--hover-scale)); */
+  }
+}
+
+/* Secondary button */
+.o-button--secondary {
+  background: var(--color-white);
+  color: var(--color-gray-700);
+  padding: var(--padding-button-md);
+  border: var(--border-width-thin) solid var(--border-color-medium);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  transition: var(--transition-colors);
+  cursor: pointer;
+
+  &:hover {
+      background: var(--bg-card-hover);
+  }
+}
+
+/* Dark Button */
+.o-button--dark {
+  background-color: var(--color-gray-900);
+  color: var(--color-white);
+  padding: var(--padding-button-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-all);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-transform);
+
+  /* &:hover { */
+    /* background: linear-gradient(to bottom, var(--color-primary), var(--color-primary-hover)); */
+    /* transform: scale(var(--hover-scale)); */
+  /* } */
+}
+
+/* Icon Button */
+.o-button--icon {
+  background: transparent;
+  padding: var(--spacing-2);
+  border-radius: var(--radius-md);
+  border: none;
+  transition: var(--transition-colors);
+  cursor: pointer;
+
+  &:hover {
+      background: var(--color-gray-100);
+  }
+}
+
+/* Profile Button */
+.o-button--profile {
+  width: var(--spacing-10);
+  height: var(--spacing-10);
+  background: linear-gradient(
+    to bottom right,
+    var(--color-transport),
+    var(--color-primary)
+  );
+  color: var(--color-white);
+  border-radius: var(--radius-full);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    var(--transition-transform),
+    var(--transition-all);
+
+  &:hover {
+    transform: var(--transform-scale-md);
+    box-shadow: var(--shadow-lg);
+  }
+}
+

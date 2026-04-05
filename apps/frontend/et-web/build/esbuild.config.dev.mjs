@@ -186,7 +186,8 @@ const esbuildOptions = {
   sourcemap: false, // Generate sourcemaps
   loader: {
     ".png": "file", // Handle PNG images
-    ".css": "css", // Handle CSS files
+    ".css": "css",
+    ".module.css": "local-css", // Handle CSS files
     ".html": "copy", // Handle HTML files
   },
   logLevel: "info",
@@ -195,7 +196,7 @@ const esbuildOptions = {
   define: define,
   external: ["node_modules/*"], // Exclude specific modules from being bundled (e.g., node_modules)
   plugins: [
-    tailwindPlugin({}),
+    // tailwindPlugin({}),
     tanstackRouter({
       target: 'react',
       autoCodeSplitting: true

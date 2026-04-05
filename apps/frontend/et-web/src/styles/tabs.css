@@ -1,0 +1,29 @@
+/* Tab (Active) */
+.o-tab.is-active {
+  background: var(--color-gray-900);
+  color: var(--color-white);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  border: none;
+  transition: var(--transition-colors);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Tab (Inactive) */
+.o-tab {
+  background: var(--color-white);
+  color: var(--color-gray-600);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  border: none;
+  transition: var(--transition-colors);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--color-gray-100);
+  }
+}

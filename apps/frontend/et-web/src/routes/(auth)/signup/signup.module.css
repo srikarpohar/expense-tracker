@@ -1,0 +1,44 @@
+.l-container {
+    margin: auto;
+    position: absolute;
+    min-width: 30rem;
+    min-height: 40vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+
+    & span {
+        position: absolute;
+        left: 50%;
+        transform: translate(-15%, 1rem) scale(1.1);
+        width: 100%;
+        vertical-align: middle;
+        font-size: var(--font-size-sm); 
+
+        &>a {
+            text-decoration: none;
+            color: var(--color-primary);
+        }
+    }
+}
+
+body {
+    background: var(--bg-page);
+}
+
+.l-eye {
+    cursor: pointer;
+}
+
+.l-country-dropdown {
+    max-width: 4ch;
+}
+
+.c-country-dropdown {
+    font-size: var(--font-size-lg);
+    scale: 1.2;
+    border: none;
+    background: none;
+    outline: none;
+}
+
