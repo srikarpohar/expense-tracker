@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import DialogFooter from "./footer";
 import DialogHeader from "./header";
-import './dialog.css';
 
 export type DialogRef = {
     open: () => void;
@@ -59,8 +58,8 @@ function Dialog(props: DialogProps, ref: React.Ref<DialogRef>) {
     }
 
     return (
-        <div className="dialog-container" data-dialog-container="true">
-            <div className="dialog-content" data-dialog-content="true">
+        <div className="l-dialog l-flex--col l-flex--center c-dialog" data-dialog-container="true">
+            <div className="l-dialog__content c-dialog__content" data-dialog-content="true">
                 <DialogHeader title={props.title} onClose={handleClose} />
                 {props.children}
                 <DialogFooter onClose={handleClose}>

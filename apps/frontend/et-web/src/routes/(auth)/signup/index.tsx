@@ -103,7 +103,7 @@ function SignupComponent() {
                       />
                       
                     </div>
-                      {errors.phone_number && <p className='text-red-500 text-sm'>{errors.phone_number.message}</p>}
+                      {errors.phone_number && <p className='c-input__error-message'>{errors.phone_number.message}</p>}
                 </section>
 
                 <section className='l-form__input-section'>
@@ -116,7 +116,7 @@ function SignupComponent() {
                           className='l-input__field c-input__field'
                       />
                     </div>
-                      {errors.email && <p className='text-red-500 text-sm'>{errors.email.message}</p>}
+                    {errors.email && <p className='c-input__error-message'>{errors.email.message}</p>}
                 </section>
 
                 <section className='l-form__input-section'>
@@ -129,7 +129,7 @@ function SignupComponent() {
                         className='l-input__field c-input__field'
                       />
                     </div>
-                    {errors.username && <p className='text-red-500 text-sm'>{errors.username.message}</p>}
+                    {errors.username && <p className='c-input__error-message'>{errors.username.message}</p>}
                 </section>
 
                 <section className='l-form__input-section'>
@@ -149,7 +149,7 @@ function SignupComponent() {
                       onClick={() => setShowField(showField === "password" ? "" : "password")}
                     />
                     </div>
-                    {errors.password && <p className='text-red-500 text-sm'>{errors.password.message}</p>}
+                    {errors.password && <p className='c-input__error-message'>{errors.password.message}</p>}
                 </section>
 
                 <section className='l-form__input-section'>
@@ -166,7 +166,7 @@ function SignupComponent() {
                         onClick={() => setShowField(showField === "confirmpass" ? "" : "confirmpass")}
                       />
                     </div>
-                    {errors.confirmpass && <p className='text-red-500 text-sm'>{errors.confirmpass.message}</p>}
+                    {errors.confirmpass && <p className='c-input__error-message'>{errors.confirmpass.message}</p>}
                 </section>
 
                 <section className='l-form__input-section'>

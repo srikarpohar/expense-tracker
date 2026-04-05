@@ -1,4 +1,4 @@
-import "./calendar.css";
+import "./calendar.module.css";
 
 type ICalendarCellProps = {
     date: string,
@@ -8,13 +8,17 @@ type ICalendarCellProps = {
 
 function CalendarCell(props: ICalendarCellProps) {
     return (
-        <div className={`cell ${props.isHeader ? '' : 'h-full'}`}>
-            <p className={`text-center ${props.isHeader ? 'font-bold' : ''}`}>
-                {props.date}
-            </p>
-
+        <div className={`calendar_l-cell calendar_c-cell ${props.isHeader ? 'calendar_c-cell--header calendar_l-cell--header' : ''}`}>
             {
-                !props.isHeader && props.children
+                props.isHeader && <p className="s2">{props.date}</p>
+            }
+            {
+                !props.isHeader && (
+                    <div className="calendar_c-cell__date calendar_l-cell__date">
+                        <p className="s2">{props.date}</p>
+                        {props.children}
+                    </div>
+                )
             }
         </div>
     );

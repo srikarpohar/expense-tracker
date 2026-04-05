@@ -17,6 +17,11 @@
   }
 }
 
+.o-dropdown__header {
+  border-bottom: var(--border-width-thin) solid var(--border-color-default);
+  padding: var(--padding-button-md);
+}
+
 /* Dropdown menu */
 .o-dropdown__menu {
   position: absolute;
@@ -44,6 +49,7 @@
   text-align: left;
   cursor: pointer;
   transition: var(--transition-colors);
+  text-decoration: none;
 
   &:hover {
     background: var(--bg-card-hover);

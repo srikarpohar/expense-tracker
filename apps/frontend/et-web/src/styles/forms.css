@@ -76,6 +76,7 @@
     padding: 0 var(--spacing-2);
     background: none;
     font-size: var(--font-size-base);
+    font-family: inherit;
 }
 
 .l-input-icon {
@@ -103,5 +104,10 @@
 
 .c-input__label {
     font-size: var(--font-size-sm);
+}
+
+.c-input__error-message {
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
 }
 

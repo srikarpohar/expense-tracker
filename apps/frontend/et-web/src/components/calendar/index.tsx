@@ -1,6 +1,6 @@
 import { getDaysInMonth } from 'expense-tracker-shared';
 import * as React from 'react';
-import "./calendar.css";
+import "./calendar.module.css";
 import CalendarCell from './cell';
 
 export const MONTHS = [
@@ -75,25 +75,24 @@ function Calendar(props: ICalendarProps) {
     
     // TODO: Convert cell into seperate component.
     return (
-      <div className={`calendar-row grid-rows-(--tw-rows) auto-rows-fr rounded-xl w-full h-full`}
-        style={{"--tw-rows": `50px repeat(${rows}, minmax(0, 1fr))`} as React.CSSProperties}>
-        {WEEK.map((week, index) => (
-        <div className='row-start-1 date-container p-2 flex justify-center items-center' key={"week0day" + index}>
-            <CalendarCell date={week.substring(0, 3)} isHeader>
-            </CalendarCell>
+      <div className="calendar_l-calendar calendar_c-calendar"
+        style={{"--tw-calendar-rows": `repeat(${rows}, minmax(0, 1fr))`} as React.CSSProperties}>
+        <div className='calendar_l-row' key="calendar-header">
+            {WEEK.map((week, index) => (
+                <CalendarCell date={week.substring(0, 3)} isHeader key={"week0day" + index}>
+                </CalendarCell>
+            ))}
         </div>
-        ))}
 
         {data.map((row, wkIndex) => {
           return (
-              row.map((col, dayIndex) => (
-                <div key={`week-${wkIndex + 1}_day-${dayIndex}`} 
-                    className={`row-start-${wkIndex + 2} date-container p-2`}>
-                    <CalendarCell date={col.date.toString()}>
+            <div className='calendar_l-row' key={`week-${wkIndex + 1}`}>
+                {row.map((col, dayIndex) => (
+                    <CalendarCell date={col.date.toString()} key={`week-${wkIndex + 1}_day-${dayIndex}`} >
                         {props.renderCell && props.renderCell(col.date.toString())}
                     </CalendarCell>
-                </div>
-              ))
+                ))}
+            </div>
           );
         })}
       </div>

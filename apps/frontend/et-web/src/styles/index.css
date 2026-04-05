@@ -5,6 +5,7 @@
 @import "./cards.css";
 @import "./dropdowns.css";
 @import "./forms.css";
+@import "./dialog.css";
 
 :root {
     --font-size: 16px;
@@ -46,6 +47,7 @@
 
     /* Background colors */
     --bg-page: linear-gradient(to bottom right, #F8FAFC, #F1F5F9);
+    --bg-dialog: rgba(0, 0, 0, 0.5);
     --bg-card: #FFFFFF;
     --bg-card-hover: #F8FAFC;
     --bg-card-active: linear-gradient(to bottom right, #3B82F6, #2563EB);

@@ -5,11 +5,11 @@ type DialogFooterProps = {
 
 function DialogFooter(props: DialogFooterProps) {
     return (
-        <div className="dialog-footer">
+        <div className="l-flex l-flex--end l-dialog__footer">
             {props.children}
 
             {!props.children && (
-                <button type="button" className="dialog-footer-button" onClick={props.onClose}>
+                <button type="button" className="o-button" onClick={props.onClose}>
                     Close
                 </button>
             )}
