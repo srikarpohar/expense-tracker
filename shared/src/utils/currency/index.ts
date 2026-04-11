@@ -1,8 +1,8 @@
 import { ICurrency } from "src/types";
 import countries from "../intl-tel-number/countries.json";
 
-export const getCurrencyFromCountryCode = (currencyCode: string): ICurrency | null => {
-    const currencyDoc = countries.find((country: any) => country.currency == currencyCode);
+export const getCurrencyFromCountryCode = (countryCode: string): ICurrency | null => {
+    const currencyDoc = countries.find((country: any) => country.code == countryCode);
     if(!currencyDoc) {
         return null;
     }
@@ -10,22 +10,13 @@ export const getCurrencyFromCountryCode = (currencyCode: string): ICurrency | nu
     return currencyDoc;
 }
 
-export const getCountryCodeFromCurrency = (currencySymbol: string): string | null => {
+export const getCountryCodeFromCurrencySymbol = (currencySymbol: string): string | null => {
     const currencyDoc = countries.find((country: any) => country.currencySymbol == currencySymbol);
     if(!currencyDoc) {
         return null;
     }
 
     return currencyDoc?.code;
-}
-
-export const getCurrencySymbolFromCurrency = (currency: string): string | null => {
-    const currencyDoc = countries.find((country: any) => country.currency == currency);
-    if(!currencyDoc) {
-        return null;
-    }
-
-    return currencyDoc?.currencySymbol;
 }
 
 export const formatCurrencyValue = (value: string): string => {
@@ -36,12 +27,11 @@ export const formatCurrencyValue = (value: string): string => {
 
     let result = [];
     for(let entry of entries) {
-        const [, amount] = entry.match(/^([A-Z]{3})(\d+(?:\.\d+)?)$/)?.slice(1) ?? [];
-        console.log("Amount:", amount);
-        const currencyCode = entry.slice(0, 3);
+        const [, amount] = entry.match(/^([A-Z]{2})(\d+(?:\.\d+)?)$/)?.slice(1) ?? [];
+        const countryCode = entry.slice(0, 2);
 
-        const currencySymbol = getCurrencySymbolFromCurrency(currencyCode);
-        result.push(`${currencySymbol ?? currencyCode}${amount}`);
+        const currencySymbol = getCurrencyFromCountryCode(countryCode)?.currencySymbol ?? countryCode;
+        result.push(`${currencySymbol}${amount}`);
     }
 
     return result.join(" | ");

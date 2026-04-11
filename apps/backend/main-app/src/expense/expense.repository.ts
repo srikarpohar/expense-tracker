@@ -72,11 +72,13 @@ export class ExpenseRepository {
     }
 
     async createExpenseDoc(expenseDoc: IExpense) {
-        await this.databaseConnection.sqlInstance`
+        const result = await this.databaseConnection.sqlInstance`
             INSERT INTO expense
             ${this.databaseConnection.sqlInstance(expenseDoc, ["amount", "category_id", "user_id", "country_code", "name", "notes", "type", "created_at"])}
             RETURNING *
         `;
+
+        return result;
     }
 
 }

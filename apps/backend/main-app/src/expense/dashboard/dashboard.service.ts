@@ -1,5 +1,5 @@
 import { BadRequestException, HttpStatus, Inject, InternalServerErrorException } from "@nestjs/common";
-import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, GetCalendarDataResponse, getCountryCodeFromCurrency, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-shared";
+import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, getCountryCodeFromCurrencySymbol, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-shared";
 import { ExpenseHistoryService } from "../expense-history.service";
 import { ExpenseCategoryService } from "../expense-category/expense-category.service";
 import { UserTransactionsService } from "src/users/user-transactions/user-transactions.service";
@@ -41,57 +41,9 @@ export class DashboardService {
         return calendarData;
     }
 
-    // async getMonthlyCurrencyData(user_id: number, monthYear: string) {
-    //     const [month, year] = monthYear.split("/").map(doc => Number(doc));
-    //     const monthQueryString = month.toString().padStart(2, "0");
-
-    //     const result: {
-    //         created_at: Date, 
-    //         currency: string,
-    //         total_amount: number
-    //     }[] = await this.dbConnection.sqlInstance`
-    //         SELECT created_at, currency, SUM(amount) total_amount FROM expense 
-    //         WHERE user_id = ${user_id} 
-    //         AND created_at BETWEEN ${`${year}-${monthQueryString}-01`} 
-    //         AND ${`${year}-${monthQueryString}-31`} 
-    //         GROUP BY created_at, currency
-    //         ORDER BY created_at, currency;
-    //     `;
-
-    //     const finalResult: GetCalendarDataResponse[] = [];
-    //     let currencyData: {
-    //         totalAmount: number;
-    //         currency: string;
-    //     }[] = [], prevCreatedAt: string = "";
-    //     for(const row of result) {
-    //         const date = `${row.created_at.getDate()}/${row.created_at.getMonth()}/${row.created_at.getFullYear()}`;
-    //         if(prevCreatedAt != date && prevCreatedAt != "") {
-    //             finalResult.push({
-    //                 date: date,
-    //                 currencyData: currencyData,
-    //             })
-    //             currencyData = [];
-    //         }
-
-    //         currencyData.push({
-    //             currency: row.currency,
-    //             totalAmount: row.total_amount
-    //         })
-    //         prevCreatedAt = date;
-    //     }
-
-    //     if(result.length) {
-    //         finalResult.push({
-    //             date: prevCreatedAt,
-    //             currencyData: currencyData,
-    //         })
-    //     }
-    //     return finalResult;
-    // }
-
     async addExpense(data: AddExpenseRequestDto, user: IUserPayload): Promise<IExpense> {
         // Validate currency.
-        const countryCode = getCountryCodeFromCurrency(data.currency);
+        const countryCode = getCountryCodeFromCurrencySymbol(data.currency);
         if(!countryCode) {
             throw new BadRequestException({
                 status: HttpStatus.BAD_REQUEST,

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useContext, useState, Activity, useRef, useCallback, use, Suspense } from 'react';
+import { useEffect, useContext, useState, useRef } from 'react';
 import { AuthContext } from '../context/auth/auth.context';
 import { PlusIcon, WalletIcon } from "@phosphor-icons/react";
 import Calendar from '../components/calendar';
@@ -11,7 +11,7 @@ import { Dropdown } from '../components/dropdown';
 import "./dashboard.module.css"
 import { GlobeIcon } from '@phosphor-icons/react/dist/ssr';
 import CalendarNav from '../components/calendar/nav';
-import { fetchCurrencyDashboardData } from '../api-layer/dashboard.service';
+import { fetchCalendarData, fetchCurrencyDashboardData } from '../api-layer/dashboard.service';
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent
@@ -55,18 +55,15 @@ interface ICalendarData {
 }
 
 function RouteComponent() {
-
-  console.log("rendering dashboard component");
   // Context
   const {userData, logoutUser} = useContext(AuthContext);
 
   // State.
   const [currDate, setCurrDate] = useState(new Date());
-
-  const currencyData: GetMonthlyCurrencyDataResponse[] = [];
+  const [currencyData, setCurrencyData] = useState<GetMonthlyCurrencyDataResponse[]>([]);
   const [calendarData, setCalendarData] = useState<ICalendarData>({});
+  
   const categories = new Set<string>(Object.values(calendarData).flatMap(doc => doc.category_data.map(categoryData => categoryData.category)));
-
   const dialogRef = useRef<DialogRef>(null);
 
   const {
@@ -86,17 +83,19 @@ function RouteComponent() {
       }
     });
 
+  const startDate = `${currDate.getFullYear()}-${(currDate.getMonth() + 1).toString().padStart(2, '0')}-01`;
+  const endDate = `${currDate.getFullYear()}-${(currDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currDate.getFullYear(), currDate.getMonth() + 1, 0).getDate().toString().padStart(2, '0')}`;
+  
   useEffect(() => {
-    axiosHttpApiRequestLayer.get<GetCalendarDataRequest, GetCalendarDataResponse[]>('/dashboard/calendar', {
-      startDate: `${currDate.getFullYear()}-${(currDate.getMonth() + 1).toString().padStart(2, '0')}-01`,
-      endDate: `${currDate.getFullYear()}-${(currDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currDate.getFullYear(), currDate.getMonth() + 1, 0).getDate().toString().padStart(2, '0')}`
-    }).then((response) => {
-      setCalendarData(response.data.reduce((acc, curr) => {
-        acc[curr.expense_date] = curr;
-        return acc;
-      }, {} as ICalendarData));
+    Promise.all([fetchCurrencyDashboardData(startDate, endDate), fetchCalendarData(startDate, endDate)])
+      .then(([currencyDataResponse, calendarDataResponse]) => {
+        setCurrencyData(currencyDataResponse);
+        setCalendarData(calendarDataResponse.reduce((acc, curr) => {
+          acc[curr.expense_date] = curr;
+          return acc;
+        }, {} as ICalendarData));
     }).catch((error) => {
-      // console.log("Error while fetching dashboard data: ", error);
+        console.log("Error while fetching dashboard data: ", error);
     });
 
     return () => {
@@ -175,7 +174,7 @@ function RouteComponent() {
                   <p className='s3'>{userData?.email}</p>
                 </div>
               </div>
-      )}
+            )}
             options={["Logout"]}
             onSelect={(option: string) => {
               if(option === "Logout") {
@@ -188,31 +187,28 @@ function RouteComponent() {
       </header>
 
       <section className='dashboard_l-filters'>
-        <Suspense fallback={<div>Loading...</div>}>
-          {
-            currencyData.map((currency: GetMonthlyCurrencyDataResponse) => {
-              return (
-                <section className='o-card--currency dashboard_c-card dashboard_l-card'>
-                  <div className='dashboard_l-card__header'>
-                    <span className='s2'>{currency.country_code}</span>
-                    <WalletIcon size={24} weight='regular' color='#94a3b8'/>
-                  </div>
-                  
-                  <div className='dashboard_l-card__content'>
-                    <p className='t4'>{getCurrencyFromCountryCode(currency.country_code)}{currency.total_amount.toFixed(2)}</p>
-                    <p className='s3'>{currency.total_expenses_count} Expenses</p>
-                  </div>
-                </section>
-              );
-            })
-          }
-        </Suspense>
+        {
+          currencyData.map((currency: GetMonthlyCurrencyDataResponse) => {
+            return (
+              <section className='o-card--currency dashboard_c-card dashboard_l-card'>
+                <div className='dashboard_l-card__header'>
+                  <span className='s2'>{currency.country_code}</span>
+                  <WalletIcon size={24} weight='regular' color='#94a3b8'/>
+                </div>
+                
+                <div className='dashboard_l-card__content'>
+                  <p className='t4'>{getCurrencyFromCountryCode(currency.country_code)?.currencySymbol ?? ""}{Number.parseInt(currency.total_amount).toFixed(2)}</p>
+                  <p className='s3'>{currency.total_expenses_count} Expenses</p>
+                </div>
+              </section>
+            );
+          })
+        }
       </section>
 
       <section className='dashboard_l-calendar dashboard_c-calendar'>
         <CalendarNav date={currDate} onPrevMonthClick={onPrevMonthClick} onNextMonthClick={onNextMonthClick} />
           
-        {/* TODO: Filters for calendar view (currency, category, etc.) */}
         <div className='dashboard_l-calendar__filters dashboard_c-calendar__filters'>
           <button className='o-button--dark dashboard_c-filter__currency l-button s2'>
             <GlobeIcon size={16} weight='bold' />
@@ -221,7 +217,7 @@ function RouteComponent() {
 
           {categories.size > 0 && (
             [...categories].map((category: string) => (
-              <button className='dashboard_c-filter__currency o-button--secondary s2'>
+              <button className='dashboard_c-filter__currency o-button--secondary s2' key={category}>
                 {category}
               </button>
             ))
@@ -232,10 +228,11 @@ function RouteComponent() {
           const dateKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
           return (
             <>
-            {/* TODO: Get daily expense data grouped by categories */}
               {calendarData[dateKey]?.category_data?.length && (
                 calendarData[dateKey]?.category_data.map((categoryData) => (
-                  <div className='s3 dashboard_c-calendar__category dashboard_l-calendar__category'>
+                  <div className='s3 dashboard_c-calendar__category dashboard_l-calendar__category' 
+                    key={`${dateKey}-${categoryData.category}`}
+                    style={{backgroundColor: `var(${categoryStyles[categoryData.category]?.styleVariable})`}}>
                     {formatCurrencyValue(categoryData.country_totals)}
                   </div>
                 ))
@@ -361,46 +358,9 @@ function RouteComponent() {
                 />
               </div>
             </section>
-
-            {/* <section className='input-section left-0'>
-              <label htmlFor="isRecurring" className='flex-1 w-50 font-bold'>Is Recurring:</label>
-              <input type="checkbox" id='isRecurring'
-                  className={errors.isRecurring ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("isRecurring")}
-              />
-            </section> */}
           </fieldset>
         </form>
       </Dialog>
     </div>
   )
 }
-
-{/* <section className={`left-container p-2 
-        row-start-2 row-span-3 col-start-1 col-span-1 
-        border-t-0 border-b-0 border-(length:--tw-border) border-gray-200
-        flex flex-col justify-center items-center`}
-
-        style={{"--tw-border": minimiseFilters ? '0px' : '2px'} as React.CSSProperties}
-      >
-          
-          <button className={`p-1 bg-green-500 text-white flex items-center minimise-button`}
-            style={{
-              "--tw-rotate": minimiseFilters ? '180deg' : '0deg',
-              "--tw-scale": minimiseFilters ? '0.6' : '0.9',
-              "--tw-left": minimiseFilters ? '-15px' : '332px'
-            } as React.CSSProperties} 
-            onClick={() => setMinimiseFilters(!minimiseFilters)}>
-              <CaretLeftIcon size={16} weight="bold" className={`flex-1`}/>
-          </button>
-
-          <Activity mode={minimiseFilters ? 'hidden' : 'visible'}>
-            <div className='flex-1 overflow-y-auto'>
-                <Accordion data={accordionData} openAtStart></Accordion>
-            </div>
-
-            <button className='bg-red-400 text-white rounded-md m-2 p-2 max-w-[75%]! cursor-pointer' onClick={logoutUser}>
-              Logout
-            </button>
-        </Activity>
-      </section> */}

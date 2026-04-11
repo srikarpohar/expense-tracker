@@ -5,6 +5,6 @@ export interface GetMonthlyCurrencyDataRequest {
 
 export interface GetMonthlyCurrencyDataResponse {
     country_code: string;
-    total_amount: number;
-    total_expenses_count: number;
+    total_amount: string;
+    total_expenses_count: string;
 }

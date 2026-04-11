@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 import type {
+  GetCalendarDataRequest,
+  GetCalendarDataResponse,
   GetMonthlyCurrencyDataRequest,
   GetMonthlyCurrencyDataResponse,
 } from "expense-tracker-shared";
@@ -15,6 +17,21 @@ export const fetchCurrencyDashboardData = (
   >("/dashboard/currency", {
     startDate,
     endDate,
+  }).then((response) => {
+    return response.data;
+  }).catch((error) => {
+    console.log(error);
+    return [];
+  });
+};
+
+export const fetchCalendarData = (
+  startDate: string,
+  endDate: string
+): Promise<GetCalendarDataResponse[]> => {
+  return axiosHttpApiRequestLayer.get<GetCalendarDataRequest, GetCalendarDataResponse[]>("/dashboard/calendar", {
+    startDate,
+    endDate
   }).then((response) => {
     return response.data;
   }).catch((error) => {
