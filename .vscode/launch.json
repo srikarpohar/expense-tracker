@@ -13,6 +13,7 @@
             "localRoot": "${workspaceFolder}/apps/backend/main-app",
             "remoteRoot": "/app/apps/backend/main-app",
             "restart": true,
+            "sourceMaps": true,
             "skipFiles": ["<node_internals>/**"]
         }
     ]
