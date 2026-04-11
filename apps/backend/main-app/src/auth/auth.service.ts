@@ -13,13 +13,13 @@ import { CacheManagerService } from "src/shared/cache-manager/cache-manager.serv
 export class AuthService {
     private readonly BLACKLISTED_TOKENS_CACHE_KEY = "blacklisted_tokens";
     @Inject()
-    private readonly usersService: UsersService;
+    private readonly usersService!: UsersService;
 
     @Inject()
-    private readonly logger: LoggerService;
+    private readonly logger!: LoggerService;
 
     @Inject()
-    private readonly cacheManagerService: CacheManagerService;
+    private readonly cacheManagerService!: CacheManagerService;
 
     constructor(
         private readonly configService: ConfigService,
@@ -92,7 +92,7 @@ export class AuthService {
                 algorithms: ["HS256"],
             });
             return payload;
-        } catch(error) {
+        } catch(error: any) {
             this.logger.error(error.message as string);
             throw new UnauthorizedException({
                 statusCode: HttpStatus.UNAUTHORIZED,

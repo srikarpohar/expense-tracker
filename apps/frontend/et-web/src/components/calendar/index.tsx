@@ -23,11 +23,11 @@ export const WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thurshday", "F
 type ICalendarProps = {
     date: Date,
     type: "month";
-    renderCell?: (date: string) => React.ReactNode;
+    renderCell?: (date: Date) => React.ReactNode;
 }
 
 type DateCell = {
-    date: number;
+    date: Date;
     isDateInCurrMonth?: boolean;
 }
 
@@ -61,9 +61,13 @@ function Calendar(props: ICalendarProps) {
                 // next month date.
                 currDayNo = dayCounter - daysInMonth + 1;
             }
-
+            
+            const isDateInCurrMonth = dayCounter >=0 && dayCounter < daysInMonth;
+            const currDate = isDateInCurrMonth ? 
+                new Date(date.getFullYear(), date.getMonth(), currDayNo) : 
+                new Date(date.getFullYear(), date.getMonth() + (dayCounter < 0 ? -1 : 1), currDayNo);
             week.push({
-                date: currDayNo,
+                date: currDate,
                 isDateInCurrMonth: dayCounter >=0 && dayCounter < daysInMonth
             })
             
@@ -79,7 +83,7 @@ function Calendar(props: ICalendarProps) {
         style={{"--tw-calendar-rows": `repeat(${rows}, minmax(0, 1fr))`} as React.CSSProperties}>
         <div className='calendar_l-row' key="calendar-header">
             {WEEK.map((week, index) => (
-                <CalendarCell date={week.substring(0, 3)} isHeader key={"week0day" + index}>
+                <CalendarCell day={week.substring(0, 3)} isHeader key={"week0day" + index}>
                 </CalendarCell>
             ))}
         </div>
@@ -88,8 +92,8 @@ function Calendar(props: ICalendarProps) {
           return (
             <div className='calendar_l-row' key={`week-${wkIndex + 1}`}>
                 {row.map((col, dayIndex) => (
-                    <CalendarCell date={col.date.toString()} key={`week-${wkIndex + 1}_day-${dayIndex}`} >
-                        {props.renderCell && props.renderCell(col.date.toString())}
+                    <CalendarCell date={col.date} key={`week-${wkIndex + 1}_day-${dayIndex}`} >
+                        {props.renderCell && props.renderCell(col.date)}
                     </CalendarCell>
                 ))}
             </div>

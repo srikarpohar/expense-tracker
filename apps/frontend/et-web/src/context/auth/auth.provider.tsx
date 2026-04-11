@@ -95,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserData({
           sub: payload.sub,
           username: payload.username,
+          email: payload.email,
         });
         router.update({ context: { verifyTokenResponse: {payload} } });
         return {payload};
@@ -105,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUserData({
         sub: payload.sub,
         username: payload.username,
+        email: payload.email,
       });
       router.update({ context: { verifyTokenResponse: response.data } });
       // persistVerifyTokenResponse(response.data);

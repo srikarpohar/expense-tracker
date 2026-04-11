@@ -8,7 +8,7 @@ import { ConfigService } from "@nestjs/config";
 @Injectable()
 export class UsersService {
     @Inject()
-    private readonly dbConnection: PgDatabaseConnectionService;
+    private readonly dbConnection!: PgDatabaseConnectionService;
 
     constructor(
         private readonly configService: ConfigService
@@ -18,7 +18,8 @@ export class UsersService {
     getJwtPayload(userData: IUser) {
         return {
             sub: userData.user_id as number,
-            username: userData.username
+            username: userData.username,
+            email: userData.email
         }
     }
 

@@ -14,5 +14,6 @@ export interface IUser {
 
 export interface IUserPayload {
     sub: number,
-    username: IUser["username"]   
+    username: IUser["username"],
+    email: IUser["email"]
 }
