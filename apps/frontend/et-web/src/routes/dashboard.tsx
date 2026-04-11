@@ -1,79 +1,42 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useContext, useState, Activity, useRef } from 'react';
+import { useEffect, useContext, useState, Activity, useRef, useCallback, use, Suspense } from 'react';
 import { AuthContext } from '../context/auth/auth.context';
-import { CaretLeftIcon, PlusIcon } from "@phosphor-icons/react";
-import CalendarHeader from '../components/calendar/header';
+import { PlusIcon, WalletIcon } from "@phosphor-icons/react";
 import Calendar from '../components/calendar';
-import type { AccordionData } from '../components/accordion';
-import Accordion from '../components/accordion';
-import './dashboard.css';
 import Dialog, { type DialogRef } from '../components/dialog';
 import { useForm } from 'react-hook-form';
 import { axiosHttpApiRequestLayer } from '../api-layer/base.service';
-import { ExpenseType, type AddExpenseCategoryRequestDto, type AddExpenseRequestDto, type AddExpenseResponseDTO, type GetCalendarDataRequest, type GetCalendarDataResponse } from 'expense-tracker-shared';
+import { ExpenseType, formatCurrencyValue, getCurrencyFromCountryCode, type AddExpenseRequestDto, type AddExpenseResponseDTO, type GetCalendarDataRequest, type GetCalendarDataResponse, type GetMonthlyCurrencyDataResponse } from 'expense-tracker-shared';
 import { Dropdown } from '../components/dropdown';
+import "./dashboard.module.css"
+import { GlobeIcon } from '@phosphor-icons/react/dist/ssr';
+import CalendarNav from '../components/calendar/nav';
+import { fetchCurrencyDashboardData } from '../api-layer/dashboard.service';
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent
 })
 
-const dummyAccordionData: AccordionData[] = [{
-    id: '1',
-    title: 'Header 1',
-    items: [
-      {id: '1', title: 'Item 1'},
-      {id: '2', title: 'Item 2'},
-      {id: '3', title: 'Item 3'},
-    ]
-  }, {
-    id: '2',
-    title: 'Header 2',
-    items: [
-      {id: '1', title: 'Item 1'},
-      {id: '2', title: 'Item 2'},
-      {id: '3', title: 'Item 3'},
-    ]
-  }, {
-    id: '3',
-    title: 'Header 3',
-    items: [
-      {id: '1', title: 'Item 1'},
-      {id: '2', title: 'Item 2'},
-      {id: '3', title: 'Item 3'},
-    ]
-  }, {
-    id: '4',
-    title: 'Header 4',
-    items: [
-      {id: '1', title: 'Item 1'},
-      {id: '2', title: 'Item 2'},
-      {id: '3', title: 'Item 3'},
-    ]
-  }, {
-    id: '5',
-    title: 'Header 5',
-    items: [
-      {id: '1', title: 'Item 1'},
-      {id: '2', title: 'Item 2'},
-      {id: '3', title: 'Item 3'},
-    ]
-  }, {
-    id: '6',
-    title: 'Header 6',
-    items: [
-      {id: '1', title: 'Item 1'},
-      {id: '2', title: 'Item 2'},
-      {id: '3', title: 'Item 3'},
-    ]
-  }, {
-    id: '7',
-    title: 'Header 7',
-    items: [
-      {id: '1', title: 'Item 1'},
-      {id: '2', title: 'Item 2'},
-      {id: '3', title: 'Item 3'},
-    ]
-}];
+const categoryStyles: {[K:string]: { styleVariable: string }} = {
+  "Food": {
+    styleVariable: "--color-food",
+  },
+  "Transport": {
+    styleVariable: "--color-transport"
+  },
+  "Entertainment": {
+    styleVariable: "--color-entertainment",
+  },
+  "Shopping": {
+    styleVariable: "--color-shopping"
+  },
+  "Bills": {  
+    styleVariable: "--color-bills",
+  },
+  "Others": {
+    styleVariable: "--color-other"
+  }
+};
 
 interface IAddExpenseFormState {
   name: string;
@@ -88,26 +51,21 @@ interface IAddExpenseFormState {
 }
 
 interface ICalendarData {
-  [key: string]: {
-    date: string;
-    currencyData: {
-      totalAmount: number;
-      currency: string;
-    }[]
-  }
+  [key: string]: GetCalendarDataResponse;
 }
 
 function RouteComponent() {
+
+  console.log("rendering dashboard component");
   // Context
   const {userData, logoutUser} = useContext(AuthContext);
 
   // State.
   const [currDate, setCurrDate] = useState(new Date());
-  const [minimiseFilters, setMinimiseFilters] = useState(false);
 
-  // Dummy data for accordion
+  const currencyData: GetMonthlyCurrencyDataResponse[] = [];
   const [calendarData, setCalendarData] = useState<ICalendarData>({});
-  const [accordionData, setAccordionData] = useState<AccordionData[]>(dummyAccordionData);
+  const categories = new Set<string>(Object.values(calendarData).flatMap(doc => doc.category_data.map(categoryData => categoryData.category)));
 
   const dialogRef = useRef<DialogRef>(null);
 
@@ -129,29 +87,25 @@ function RouteComponent() {
     });
 
   useEffect(() => {
-    console.log("use effect");
-    axiosHttpApiRequestLayer.get<GetCalendarDataRequest, GetCalendarDataResponse[]>('/dashboard', {
-      monthYear: `${currDate.getMonth() + 1}/${currDate.getFullYear()}`,
+    axiosHttpApiRequestLayer.get<GetCalendarDataRequest, GetCalendarDataResponse[]>('/dashboard/calendar', {
+      startDate: `${currDate.getFullYear()}-${(currDate.getMonth() + 1).toString().padStart(2, '0')}-01`,
+      endDate: `${currDate.getFullYear()}-${(currDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currDate.getFullYear(), currDate.getMonth() + 1, 0).getDate().toString().padStart(2, '0')}`
     }).then((response) => {
       setCalendarData(response.data.reduce((acc, curr) => {
-        acc[curr.date] = {
-          date: curr.date,
-          currencyData: curr.currencyData,
-        }
+        acc[curr.expense_date] = curr;
         return acc;
       }, {} as ICalendarData));
-      console.log("Dashboard data: ", response.data);
     }).catch((error) => {
-      console.log("Error while fetching dashboard data: ", error);
+      // console.log("Error while fetching dashboard data: ", error);
     });
 
     return () => {
       console.log("use effect cleanup");
     }
-  }, []);
+  }, [currDate]);
 
   const onAddExpenseSubmit = () => {
-    console.log("Form data:", watch());
+    // console.log("Form data:", watch());
     axiosHttpApiRequestLayer.post<AddExpenseRequestDto, AddExpenseResponseDTO>("/dashboard", {
       name: watch().name,
       category_name: watch().category,
@@ -170,6 +124,10 @@ function RouteComponent() {
     });
   }
 
+  function onAddExpenseClick() {
+    dialogRef.current?.open();
+  }
+
   const onAddExpenseDialogClose = () => {
     dialogRef.current?.close();
   }
@@ -185,29 +143,240 @@ function RouteComponent() {
   }
 
   return (
-    <div className={`container grid grid-rows-[50px_auto_1fr_auto] grid-cols-(--tw-grid-cols) gap-x-2`}
-      style={{"--tw-grid-cols": minimiseFilters ? '10px 1fr' : '350px 1fr' } as React.CSSProperties}>
+    <div className="dashboard_l-container dashboard_c-container">
 
-      <header className='row-start-1 col-span-2 flex justify-center items-center p-3 border-b-2 border-gray-100'>
-        <h1 className='flex-1 text-center text-[24px]! font-bold text-gray-800 m-0'>Welcome, {userData?.username}!</h1>
-        <Dropdown toggleId='profile'
-          header={() => (
-            <div className='flex items-center gap-2 cursor-pointer mr-4'>
-              <img src={`https://ui-avatars.com/api/?name=${userData?.username}&background=0D8ABC&color=fff`} 
-                alt="Profile Image" width={40} height={40} 
-                className='border-2 border-sky-500 rounded-[50%]'/>
-            </div>
-          )}
-          options={["Logout"]}
-          onSelect={(option: string) => {
-            if(option === "Logout") {
-              logoutUser?.();
-            }
-          }}
-        />
+      <header className='dashboard_l-header dashboard_c-header'>
+        <section className='dashboard_l-welcome'>
+          <p className='t1'>
+            Welcome, {userData?.username}!
+          </p>
+          <span className='s2'>Track your expenses across multiple currencies</span>
+        </section>
+
+        <section className='dashboard_l-profile'>
+          <button className='l-button o-button--primary' onClick={onAddExpenseClick}>
+            <PlusIcon size={24} weight='regular'/>
+            Add Expense
+          </button>
+          <Dropdown toggleId='profile'
+            toggle={() => (
+              <div className='dashboard_c-profile__toggle'>
+                <img src={`https://ui-avatars.com/api/?name=${userData?.username}&background=334155&color=fff`} 
+                  alt="Profile Image" width={40} height={40} />
+              </div>
+            )}
+            header={() => (
+              <div className='l-flex l-flex--center dashboard_c-profile__header'>
+                <img src={`https://ui-avatars.com/api/?name=${userData?.username}&background=334155&color=fff`} 
+                  alt="Profile Image" width={40} height={40} style={{flex: 1}} />
+
+                <div className='dashboard_l-header__info'>
+                  <p className='s2'>{userData?.username}</p>
+                  <p className='s3'>{userData?.email}</p>
+                </div>
+              </div>
+      )}
+            options={["Logout"]}
+            onSelect={(option: string) => {
+              if(option === "Logout") {
+                logoutUser?.();
+              }
+            }}
+          >
+          </Dropdown>
+        </section>
       </header>
 
-      {/* <section className={`left-container p-2 
+      <section className='dashboard_l-filters'>
+        <Suspense fallback={<div>Loading...</div>}>
+          {
+            currencyData.map((currency: GetMonthlyCurrencyDataResponse) => {
+              return (
+                <section className='o-card--currency dashboard_c-card dashboard_l-card'>
+                  <div className='dashboard_l-card__header'>
+                    <span className='s2'>{currency.country_code}</span>
+                    <WalletIcon size={24} weight='regular' color='#94a3b8'/>
+                  </div>
+                  
+                  <div className='dashboard_l-card__content'>
+                    <p className='t4'>{getCurrencyFromCountryCode(currency.country_code)}{currency.total_amount.toFixed(2)}</p>
+                    <p className='s3'>{currency.total_expenses_count} Expenses</p>
+                  </div>
+                </section>
+              );
+            })
+          }
+        </Suspense>
+      </section>
+
+      <section className='dashboard_l-calendar dashboard_c-calendar'>
+        <CalendarNav date={currDate} onPrevMonthClick={onPrevMonthClick} onNextMonthClick={onNextMonthClick} />
+          
+        {/* TODO: Filters for calendar view (currency, category, etc.) */}
+        <div className='dashboard_l-calendar__filters dashboard_c-calendar__filters'>
+          <button className='o-button--dark dashboard_c-filter__currency l-button s2'>
+            <GlobeIcon size={16} weight='bold' />
+            All Categories
+          </button>
+
+          {categories.size > 0 && (
+            [...categories].map((category: string) => (
+              <button className='dashboard_c-filter__currency o-button--secondary s2'>
+                {category}
+              </button>
+            ))
+          )}
+        </div>
+
+        <Calendar date={currDate} type='month' renderCell={(date: Date) => {
+          const dateKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+          return (
+            <>
+            {/* TODO: Get daily expense data grouped by categories */}
+              {calendarData[dateKey]?.category_data?.length && (
+                calendarData[dateKey]?.category_data.map((categoryData) => (
+                  <div className='s3 dashboard_c-calendar__category dashboard_l-calendar__category'>
+                    {formatCurrencyValue(categoryData.country_totals)}
+                  </div>
+                ))
+              )}
+            </>
+          )
+        }}></Calendar>
+      </section>
+
+      <footer className='l-flex--col dashboard_l-footer o-card--main'>
+        <p className='s2'>Categories</p>
+
+        <section className='l-flex'>
+          {[...categories].map((category: string) => (
+            <section className='l-flex dashboard_c-legend__item' key={category}>
+              <div className='dashboard_c-item__indicator' style={{backgroundColor: `var(${categoryStyles[category]?.styleVariable})`}}></div>
+              <span className='s3'>{category}</span>
+            </section>
+          ))}
+        </section>
+      </footer>
+
+      <Dialog 
+        ref={dialogRef} 
+        title="Add expense" 
+        isOpen={false} 
+        onClose={() => {}}
+        footer={() => {
+          return (<div className='l-flex l-flex--end'>
+            <button type='submit' className='o-button--primary' // disabled={loginUser?.status === 'pending'}
+              onClick={handleSubmit(onAddExpenseSubmit)}>
+              Submit
+            </button>
+            <button type="button" className="o-button--secondary" onClick={onAddExpenseDialogClose}>
+              Close
+            </button>
+          </div>)
+        }}
+      >
+        <form className='l-form' onSubmit={handleSubmit(onAddExpenseSubmit)}>
+          <fieldset className='l-form__fieldset c-form__fieldset'>
+            <section className='l-form__input-section'>
+              <label htmlFor="name" className='l-input__label c-input__label'>Name:</label>
+
+              <div className={`l-input c-input ${errors.name ? 'has-error' : ''}`}>
+                <input type="text" placeholder='Enter name' id='name'
+                    className='l-input__field c-input__field'
+                    {...register("name", { required: {value: true, message: "Name is required"} })}
+                />
+              </div>
+
+              {errors.name && <p className='c-input__error-message'>{errors.name.message}</p>}
+            </section>
+
+            <section className='l-form__input-section'>
+              <label htmlFor="category" className='l-input__label c-input__label'>Category:</label>
+
+              <div className={`l-input c-input ${errors.category ? 'has-error' : ''}`}>
+                <input type="text" placeholder='Enter category' id='category'
+                    className='l-input__field c-input__field'
+                    {...register("category", { required: {value: true, message: "Category is required"} })}
+                />
+              </div>
+              {errors.category && <p className='c-input__error-message'>{errors.category.message}</p>}
+            </section>
+
+            <section className='l-form__input-section'>
+              <label htmlFor="description" className='l-input__label c-input__label'>Description:</label>
+
+              <div className='l-input c-input'>
+                <input type="text" placeholder='Enter description' id='description'
+                    className='l-input__field c-input__field'
+                    {...register("description")}
+                />
+              </div>
+            </section>
+
+            <section className='l-form__input-section'>
+              <label htmlFor="amount" className='l-input__label c-input__label'>Amount:</label>
+
+              <div className={`l-input c-input ${errors.amount ? 'has-error' : ''}`}>
+                <input type="number" placeholder='Enter amount' id='amount'
+                    min={0} step={0.01}
+                    className='l-input__field c-input__field'
+                    {...register("amount", { required: {value: true, message: "Amount is required"} })}
+                />
+              </div>
+              {errors.amount && <p className='c-input__error-message'>{errors.amount.message}</p>}
+            </section>
+
+            <section className='l-form__input-section'>
+              <label htmlFor="currency" className='l-input__label c-input__label'>Currency:</label>
+
+              <div className={`l-input c-input ${errors.currency ? 'has-error' : ''}`}>
+                <input type="text" placeholder='Enter currency' id='currency'
+                    className='l-input__field c-input__field'
+                    {...register("currency", { required: {value: true, message: "Currency is required"} })}
+                />
+              </div>
+              {errors.currency && <p className='c-input__error-message'>{errors.currency.message}</p>}
+            </section>
+
+            <section className='l-form__input-section'>
+              <label htmlFor="date" className='l-input__label c-input__label'>Date:</label>
+
+              <div className={`l-input c-input ${errors.date ? 'has-error' : ''}`}>
+                <input type="date" placeholder='Enter date' id='date'
+                    className='l-input__field c-input__field'
+                    {...register("date", { required: {value: true, message: "Expense Date is required"} })}
+                />
+              </div>
+              {errors.date && <p className='c-input__error-message'>{errors.date.message}</p>}
+            </section>
+
+            <section className='l-form__input-section'>
+              <label htmlFor="notes" className='l-input__label c-input__label'>Notes:</label>
+
+              <div className='l-input c-input'>
+                <textarea placeholder='Enter notes' id='notes'
+                    className='l-input__field c-input__field'
+                    {...register("notes")}
+                    rows={5}
+                />
+              </div>
+            </section>
+
+            {/* <section className='input-section left-0'>
+              <label htmlFor="isRecurring" className='flex-1 w-50 font-bold'>Is Recurring:</label>
+              <input type="checkbox" id='isRecurring'
+                  className={errors.isRecurring ? 'border-red-500 flex-2' : 'flex-2'} 
+                  {...register("isRecurring")}
+              />
+            </section> */}
+          </fieldset>
+        </form>
+      </Dialog>
+    </div>
+  )
+}
+
+{/* <section className={`left-container p-2 
         row-start-2 row-span-3 col-start-1 col-span-1 
         border-t-0 border-b-0 border-(length:--tw-border) border-gray-200
         flex flex-col justify-center items-center`}
@@ -235,118 +404,3 @@ function RouteComponent() {
             </button>
         </Activity>
       </section> */}
-
-      <section className='row-span-1 col-start-1 col-span-2 flex justify-between items-center mb-2 p-2'>
-        <CalendarHeader date={currDate} onPrevMonthClick={onPrevMonthClick} onNextMonthClick={onNextMonthClick} />
-
-        <button className='p-2 flex justify-between items-center gap-2 bg-blue-500 text-white rounded-md cursor-pointer'
-          onClick={() => dialogRef.current?.open()}>
-          <PlusIcon size={20} weight="bold"/>
-          Add Expense
-        </button>
-      </section>
-
-      <section className='row-span-1 col-start-1 col-span-2 flex justify-center items-center'>
-        <Calendar date={currDate} type='month' renderCell={(date: string) => {
-          return (
-            <p>{calendarData[date]?.currencyData[0]?.totalAmount} {calendarData[date]?.currencyData[0]?.currency}</p>
-          )
-        }}>
-        </Calendar>
-      </section>
-
-      <Dialog 
-        ref={dialogRef} 
-        title="Add expense" 
-        isOpen={false} 
-        onClose={() => {}}
-        footer={() => {
-          return (<div className='flex justify-around items-center gap-2'>
-            <input type="submit" 
-              className='button--submit'
-              onClick={handleSubmit(onAddExpenseSubmit)}
-              // disabled={loginUser?.status === 'pending'}
-              value="Submit" 
-            />
-            <button type="button" className="dialog-footer-button" onClick={onAddExpenseDialogClose}>
-                Close
-            </button>
-          </div>)
-        }}
-      >
-        <form>
-          <fieldset>
-            <section className='input-section'>
-              <label htmlFor="name" className='flex-1 w-50 font-bold'>Name:</label>
-              <input type="text" placeholder='Enter name' id='name'
-                  className={errors.name ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("name", { required: true })}
-              />
-            </section>
-
-            <section className='input-section'>
-              <label htmlFor="category" className='flex-1 w-50 font-bold'>Category:</label>
-              <input type="text" placeholder='Enter category' id='category'
-                  className={errors.category ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("category", { required: true })}
-              />
-            </section>
-
-            <section className='input-section'>
-              <label htmlFor="description" className='flex-1 w-50 font-bold'>Description:</label>
-              <input type="text" placeholder='Enter description' id='description'
-                  className={errors.description ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("description", { required: true })}
-              />
-            </section>
-
-            <section className='input-section'>
-              <label htmlFor="amount" className='flex-1 w-50 font-bold'>Amount:</label>
-              <input type="number" placeholder='Enter amount' id='amount'
-                  min={0} step={0.01}
-                  className={errors.amount ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("amount", { required: true })}
-              />
-            </section>
-
-            <section className='input-section'>
-              <label htmlFor="currency" className='flex-1 w-50 font-bold'>Currency:</label>
-              <input type="text" placeholder='Enter currency' id='currency'
-                  className={errors.currency ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("currency", { required: true })}
-              />
-            </section>
-
-            <section className='input-section'>
-              <label htmlFor="date" className='flex-1 w-50 font-bold'>Date:</label>
-              <input type="date" placeholder='Enter date' id='date'
-                  className={errors.date ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("date", { required: true })}
-              />
-            </section>
-
-            <section className='input-section'>
-              <label htmlFor="notes" className='flex-1 w-50 font-bold'>Notes:</label>
-              <textarea placeholder='Enter notes' id='notes'
-                  className={[errors.notes ? 'border-red-500 flex-2' : 'flex-2', 'border-1 rounded-sm p-2'].join(' ')} 
-                  {...register("notes", { required: true })}
-              />
-            </section>
-
-            <section className='input-section left-0'>
-              <label htmlFor="isRecurring" className='flex-1 w-50 font-bold'>Is Recurring:</label>
-              <input type="checkbox" id='isRecurring'
-                  className={errors.isRecurring ? 'border-red-500 flex-2' : 'flex-2'} 
-                  {...register("isRecurring")}
-              />
-            </section>
-          </fieldset>
-        </form>
-      </Dialog>
-
-      <footer className='row-span-1 col-start-1 col-span-2 flex justify-center items-center'>
-        <p>Footer section</p>
-      </footer>
-    </div>
-  )
-}

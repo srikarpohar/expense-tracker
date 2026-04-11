@@ -9,11 +9,20 @@ export interface IExpense {
     category_id: number | IExpenseCategory;
     notes: string;
     amount: number;
-    currency: string;
+    country_code: string;
     type: ExpenseType;
     created_at?: Date;
     paid_on?: Date;
     recurring_frequency?: RecurringExpenseFrequency;
     bill_image_url?: string;
     deleted_at?: Date;
+}
+
+export interface ICurrency {
+    code: string;
+    name: string;
+    phoneCode: string;
+    currency: string;
+    currencySymbol: string;
+    icon: string;
 }

@@ -1,14 +1,15 @@
 import { useEffect } from "react";
-import "./dropdown.css";
+// import "./dropdown.css";
 
 interface DropdownProps {
     options: string[];
-    header: () => React.ReactNode;
+    toggle: () => React.ReactNode;
+    header?: () => React.ReactNode;
     toggleId: string;
     onSelect: (option: string) => void;
 }
 
-export const Dropdown = ({ options, header, toggleId, onSelect }: DropdownProps) => {
+export const Dropdown = ({ options, toggle, header, toggleId, onSelect }: DropdownProps) => {
 
     const handleClick = (e: any) => {
         const target = (e.target as HTMLElement).closest(`[data-toggle-id="${toggleId}"]`)?.getAttribute("data-toggle-id");
@@ -33,13 +34,14 @@ export const Dropdown = ({ options, header, toggleId, onSelect }: DropdownProps)
     })
 
     return (
-        <div className="dropdown">
-            <button className={"dropdown-toggle"} data-toggle-id={toggleId}>
-                {header()}
+        <div className="o-dropdown">
+            <button className="o-dropdown__toggle--icon" data-toggle-id={toggleId}>
+                {toggle()}
             </button>
-            <div className="dropdown-menu" id={toggleId} hidden>
+            <div className="o-dropdown__menu" id={toggleId} hidden>
+                {header && <div className="o-dropdown__header">{header()}</div>}
                 {options.map((option) => (
-                    <a key={option} className="option" href="#" onClick={(e) => {
+                    <a key={option} className="o-menu-item" href="#" onClick={(e) => {
                         e.preventDefault();
                         onSelect(option);
                     }}>

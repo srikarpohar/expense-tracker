@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import AccordionHeader, { type AccordionHeaderRef } from "./header";
 import AccordionItem from "./item";
-import "./accordion.css"
 
 export type AccordionData = {
     id: string;

@@ -81,7 +81,7 @@ export const up = (pgm) => {
             category_id INT NOT NULL,
             notes VARCHAR(300),
             amount NUMERIC CHECK(amount > 0),
-            currency VARCHAR(10) NOT NULL,
+            country_code VARCHAR(10) NOT NULL,
             recurring_frequency recurring_expense_freq,
             bill_image_url VARCHAR(200),
 

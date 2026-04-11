@@ -1,11 +1,12 @@
 export interface GetCalendarDataRequest {
-    monthYear: string;
+    startDate: string;
+    endDate: string;
 }
 
 export interface GetCalendarDataResponse {
-    date: string;
-    currencyData: {
-        totalAmount: number;
-        currency: string;
-    }[]
+    expense_date: string;
+    category_data: {
+        category: string,
+        country_totals: string;
+    }[];
 }

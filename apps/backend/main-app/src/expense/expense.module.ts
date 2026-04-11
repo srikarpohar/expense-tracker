@@ -6,6 +6,7 @@ import { ExpenseHistoryService } from "./expense-history.service";
 import { ExpenseCategoryService } from "./expense-category/expense-category.service";
 import { ExpenseCategoryController } from "./expense-category/expense-category.controller";
 import { UsersModule } from "src/users/users.module";
+import { ExpenseRepository } from "./expense.repository";
 
 @Module({
     imports: [
@@ -19,12 +20,14 @@ import { UsersModule } from "src/users/users.module";
     providers: [
         DashboardService,
         ExpenseCategoryService,
-        ExpenseHistoryService
+        ExpenseHistoryService,
+        ExpenseRepository
     ],
     exports: [
         DashboardService,
         ExpenseCategoryService,
-        ExpenseHistoryService
+        ExpenseHistoryService,
+        ExpenseRepository
     ]
 })
 export class ExpenseModule {}
