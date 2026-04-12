@@ -11,7 +11,7 @@ interface DropdownProps {
 
 export const Dropdown = ({ options, toggle, header, toggleId, onSelect }: DropdownProps) => {
 
-    const handleClick = (e: any) => {
+    const handleClick = (e: MouseEvent) => {
         const target = (e.target as HTMLElement).closest(`[data-toggle-id="${toggleId}"]`)?.getAttribute("data-toggle-id");
         if (target) {
             const dropdownMenu = document.getElementById(target);
@@ -38,7 +38,7 @@ export const Dropdown = ({ options, toggle, header, toggleId, onSelect }: Dropdo
             <button className="o-dropdown__toggle--icon" data-toggle-id={toggleId}>
                 {toggle()}
             </button>
-            <div className="o-dropdown__menu" id={toggleId} hidden>
+            <div className="o-dropdown__menu" id={toggleId} hidden onClick={(e) => e.stopPropagation()}>
                 {header && <div className="o-dropdown__header">{header()}</div>}
                 {options.map((option) => (
                     <a key={option} className="o-menu-item" href="#" onClick={(e) => {

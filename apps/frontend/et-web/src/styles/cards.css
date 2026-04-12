@@ -23,14 +23,10 @@
 }
 
 /* Currency Summary Card (Active) */
-.o-card-currency.is-active {
+.o-card--currency.is-active {
   background: var(--bg-card-active);
-  color: var(--color-white);
-  padding: var(--padding-card);
-  border-radius: var(--radius-lg);
+  color: var(--color-white) !important;
   box-shadow: var(--shadow-lg);
-  transform: var(--transform-scale-md);
-  transition: var(--transition-all);
   cursor: pointer;
   border: none;
 }

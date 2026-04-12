@@ -19,7 +19,7 @@ export const getCountryCodeFromCurrencySymbol = (currencySymbol: string): string
     return currencyDoc?.code;
 }
 
-export const formatCurrencyValue = (value: string): string => {
+export const formatCurrencyValue = (value: string, selectedCountryCode: string | null): string => {
     const entries = value.split(" | ").map((currencyValue) => currencyValue.trim()).filter(Boolean);
     if (!entries.length) {
         return "";
@@ -29,6 +29,10 @@ export const formatCurrencyValue = (value: string): string => {
     for(let entry of entries) {
         const [, amount] = entry.match(/^([A-Z]{2})(\d+(?:\.\d+)?)$/)?.slice(1) ?? [];
         const countryCode = entry.slice(0, 2);
+
+        if(selectedCountryCode && selectedCountryCode != countryCode) {
+            continue;
+        }
 
         const currencySymbol = getCurrencyFromCountryCode(countryCode)?.currencySymbol ?? countryCode;
         result.push(`${currencySymbol}${amount}`);

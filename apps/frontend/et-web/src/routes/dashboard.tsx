@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useContext, useState, useRef } from 'react';
+import { useEffect, useContext, useState, useRef, useCallback } from 'react';
 import { AuthContext } from '../context/auth/auth.context';
 import { PlusIcon, WalletIcon } from "@phosphor-icons/react";
 import Calendar from '../components/calendar';
@@ -62,7 +62,9 @@ function RouteComponent() {
   const [currDate, setCurrDate] = useState(new Date());
   const [currencyData, setCurrencyData] = useState<GetMonthlyCurrencyDataResponse[]>([]);
   const [calendarData, setCalendarData] = useState<ICalendarData>({});
-  
+  const [selectedCurrency, setSelectedCurrency] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All Categories");
+
   const categories = new Set<string>(Object.values(calendarData).flatMap(doc => doc.category_data.map(categoryData => categoryData.category)));
   const dialogRef = useRef<DialogRef>(null);
 
@@ -122,6 +124,14 @@ function RouteComponent() {
       console.log("Error while adding expense: ", error);
     });
   }
+
+  const onCurrencySelect = useCallback((currency: string) => {
+    setSelectedCurrency(currency === selectedCurrency ? null : currency);
+  }, [selectedCurrency]);
+
+  const onCategorySelect = useCallback((category: string) => {
+    setSelectedCategory(category === selectedCategory ? "All Categories" : category);
+  }, [selectedCategory]);
 
   function onAddExpenseClick() {
     dialogRef.current?.open();
@@ -190,10 +200,12 @@ function RouteComponent() {
         {
           currencyData.map((currency: GetMonthlyCurrencyDataResponse) => {
             return (
-              <section className='o-card--currency dashboard_c-card dashboard_l-card'>
+              <section className={`o-card--currency dashboard_c-card dashboard_l-card ${selectedCurrency === currency.country_code ? 'is-active' : ''}`}
+                onClick={() => onCurrencySelect(currency.country_code)}
+                key={currency.country_code}>
                 <div className='dashboard_l-card__header'>
                   <span className='s2'>{currency.country_code}</span>
-                  <WalletIcon size={24} weight='regular' color='#94a3b8'/>
+                  <WalletIcon size={24} weight='regular' color={selectedCurrency === currency.country_code ? '#FFF' : '#94a3b8'} />
                 </div>
                 
                 <div className='dashboard_l-card__content'>
@@ -210,14 +222,17 @@ function RouteComponent() {
         <CalendarNav date={currDate} onPrevMonthClick={onPrevMonthClick} onNextMonthClick={onNextMonthClick} />
           
         <div className='dashboard_l-calendar__filters dashboard_c-calendar__filters'>
-          <button className='o-button--dark dashboard_c-filter__currency l-button s2'>
+          <button className={`dashboard_c-filter__currency l-button s2 ${selectedCategory === "All Categories" ? 'o-button--dark' : 'o-button--secondary'}`} 
+            key="all-categories"
+            onClick={() => onCategorySelect("All Categories")} >
             <GlobeIcon size={16} weight='bold' />
             All Categories
           </button>
 
           {categories.size > 0 && (
             [...categories].map((category: string) => (
-              <button className='dashboard_c-filter__currency o-button--secondary s2' key={category}>
+              <button className={`dashboard_c-filter__currency s2 ${selectedCategory === category ? 'o-button--dark' : 'o-button--secondary'}`} 
+                key={category} onClick={() => onCategorySelect(category)}>
                 {category}
               </button>
             ))
@@ -229,11 +244,12 @@ function RouteComponent() {
           return (
             <>
               {calendarData[dateKey]?.category_data?.length && (
-                calendarData[dateKey]?.category_data.map((categoryData) => (
+                calendarData[dateKey]?.category_data?.filter((categoryData) => selectedCategory === "All Categories" || categoryData.category === selectedCategory)?.map((categoryData) => (
                   <div className='s3 dashboard_c-calendar__category dashboard_l-calendar__category' 
                     key={`${dateKey}-${categoryData.category}`}
+                    hidden={selectedCurrency ? !formatCurrencyValue(categoryData.country_totals, selectedCurrency) : false}
                     style={{backgroundColor: `var(${categoryStyles[categoryData.category]?.styleVariable})`}}>
-                    {formatCurrencyValue(categoryData.country_totals)}
+                    {formatCurrencyValue(categoryData.country_totals, selectedCurrency)}
                   </div>
                 ))
               )}
