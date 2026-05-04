@@ -1,6 +1,6 @@
 import { Controller, Post, Req, Res } from "@nestjs/common";
-import { AddExpenseCategoryRequestDto, AddExpenseCategoryResponseDto } from "expense-tracker-shared";
-import { type Response, type Request } from "express";
+import type { AddExpenseCategoryRequestDto, AddExpenseCategoryResponseDto } from "expense-tracker-types";
+import type { Response, Request } from "express";
 import { ExpenseCategoryService } from "./expense-category.service";
 
 @Controller("expense-category")

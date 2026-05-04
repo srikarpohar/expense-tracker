@@ -4,7 +4,7 @@ import type {
   GetCalendarDataResponse,
   GetMonthlyCurrencyDataRequest,
   GetMonthlyCurrencyDataResponse,
-} from "expense-tracker-shared";
+} from "../../../../../types/src";
 import { axiosHttpApiRequestLayer } from "./base.service";
 
 export const fetchCurrencyDashboardData = (

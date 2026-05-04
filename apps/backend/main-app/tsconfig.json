@@ -22,8 +22,10 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "expense-tracker-shared": ["expense-tracker-shared"],
-      "expense-tracker-shared/*": ["expense-tracker-shared/*"]
+      "@types": ["expense-tracker-types"],
+      "@types/*": ["expense-tracker-types/*"],
+      "@utils": ["expense-tracker-utils"],
+      "@utils/*": ["expense-tracker-utils/*"]
     }
   },
   "exclude": ["migrations/*"]

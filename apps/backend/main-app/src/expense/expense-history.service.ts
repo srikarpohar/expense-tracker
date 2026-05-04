@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { IExpenseHistory, IUserPayload } from "expense-tracker-shared";
+import type { IExpenseHistory, IUserPayload } from "expense-tracker-types";
 import { PgDatabaseConnectionService } from "src/shared/database/db.connection";
 
 @Injectable()

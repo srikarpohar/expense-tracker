@@ -1,5 +1,6 @@
 import { BadRequestException, HttpStatus, Inject, InternalServerErrorException } from "@nestjs/common";
-import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, getCountryCodeFromCurrencySymbol, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-shared";
+import { AddExpenseRequestDto, ExpenseLogActions, ExpenseType, IExpense, IExpenseHistory, IUserPayload, IUserTransaction } from "expense-tracker-types";
+import { getCountryCodeFromCurrencySymbol } from "expense-tracker-utils";
 import { ExpenseHistoryService } from "../expense-history.service";
 import { ExpenseCategoryService } from "../expense-category/expense-category.service";
 import { UserTransactionsService } from "src/users/user-transactions/user-transactions.service";

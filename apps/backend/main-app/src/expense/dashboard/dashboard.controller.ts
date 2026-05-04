@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Req, Res } from "@nestjs/common";
 import { type Response, type Request } from "express";
 import { DashboardService } from "./dashboard.service";
-import { AddExpenseRequestDto, AddExpenseResponseDTO, GetCalendarDataRequest, GetCalendarDataResponse, GetMonthlyCurrencyDataRequest, GetMonthlyCurrencyDataResponse, IUserPayload } from "expense-tracker-shared";
+import type { AddExpenseRequestDto, AddExpenseResponseDTO, GetCalendarDataRequest, GetCalendarDataResponse, GetMonthlyCurrencyDataRequest, GetMonthlyCurrencyDataResponse, IUserPayload } from "expense-tracker-types";
 import { ResponseDto } from "src/types";
 
 @Controller("dashboard")

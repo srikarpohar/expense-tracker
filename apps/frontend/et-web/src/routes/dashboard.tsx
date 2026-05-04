@@ -6,7 +6,8 @@ import Calendar from '../components/calendar';
 import Dialog, { type DialogRef } from '../components/dialog';
 import { useForm } from 'react-hook-form';
 import { axiosHttpApiRequestLayer } from '../api-layer/base.service';
-import { ExpenseType, formatCurrencyValue, getCurrencyFromCountryCode, type AddExpenseRequestDto, type AddExpenseResponseDTO, type GetCalendarDataRequest, type GetCalendarDataResponse, type GetMonthlyCurrencyDataResponse } from 'expense-tracker-shared';
+import { ExpenseType, type AddExpenseRequestDto, type AddExpenseResponseDTO, type GetCalendarDataResponse, type GetMonthlyCurrencyDataResponse } from 'expense-tracker-types';
+import { formatCurrencyValue, getCurrencyFromCountryCode } from 'expense-tracker-utils';
 import { Dropdown } from '../components/dropdown';
 import "./dashboard.module.css"
 import { GlobeIcon } from '@phosphor-icons/react/dist/ssr';

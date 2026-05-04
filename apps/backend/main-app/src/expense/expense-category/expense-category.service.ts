@@ -1,5 +1,5 @@
 import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
-import { IExpenseCategory } from 'expense-tracker-shared';
+import type { IExpenseCategory } from 'expense-tracker-types';
 import { PgDatabaseConnectionService } from 'src/shared/database/db.connection';
 
 @Injectable()

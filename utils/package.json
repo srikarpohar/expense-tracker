@@ -1,0 +1,19 @@
+{
+  "name": "expense-tracker-utils",
+  "version": "1.0.0",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "build": "pnpm run clean && tsc -b",
+    "build:watch": "tsc -b --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "dependencies": {
+    "libphonenumber-js": "^1.12.33",
+    "expense-tracker-types": "workspace:expense-tracker-types"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "Shared utils for expense tracker",
+  "packageManager": "pnpm@10.20.0"
+}

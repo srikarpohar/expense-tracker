@@ -1,17 +1,15 @@
 {
-  "name": "expense-tracker-shared",
+  "name": "expense-tracker-types",
   "version": "1.0.0",
-  "description": "Shared data for expense tracker",
+  "description": "Shared types for expense tracker",
   "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "pnpm run clean && tsc -b",
     "build:watch": "tsc -b --watch",
     "clean": "rm -rf dist"
   },
-  "dependencies": {
-    "libphonenumber-js": "^1.12.33",
-    "typescript": "^5.9.3"
-  },
+  "dependencies": {},
   "keywords": [],
   "author": "",
   "license": "ISC",

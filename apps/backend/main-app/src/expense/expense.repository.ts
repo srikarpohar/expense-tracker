@@ -1,5 +1,5 @@
 import { Inject } from "@nestjs/common";
-import { GetCalendarDataResponse, GetMonthlyCurrencyDataResponse, IExpense } from "expense-tracker-shared";
+import type { GetCalendarDataResponse, GetMonthlyCurrencyDataResponse, IExpense } from "expense-tracker-types";
 import { PgDatabaseConnectionService } from "src/shared/database/db.connection";
 
 export class ExpenseRepository {

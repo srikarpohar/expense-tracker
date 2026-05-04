@@ -1,15 +1,30 @@
 name: expense-tracker
 services:
-  shared-dev:
+  shared-types:
     build:
       context: .
       dockerfile: Dockerfile
-      target: shared-dev
+      target: shared-types
     volumes:
       - type: bind
-        source: ./shared/src
-        target: /app/shared/src
-      - shared-build:/app/shared/dist
+        source: ./types/src
+        target: /app/types/src
+      - shared-types:/app/types/dist
+      
+  shared-utils:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: shared-utils
+    volumes:
+      - type: bind
+        source: ./utils/src
+        target: /app/utils/src
+      - shared-types:/app/types/dist
+      - shared-utils:/app/utils/dist
+    depends_on:
+      shared-types:
+        condition: service_started
 
   database:
     image: postgres:18
@@ -46,9 +61,10 @@ services:
         source: ./apps/backend/main-app
         target: /app/apps/backend/main-app
       - backend-node-modules:/app/apps/backend/main-app/node_modules
-      - shared-build:/app/shared/dist
+      - shared-types:/app/types/dist
+      - shared-utils:/app/utils/dist
     depends_on:
-      shared-dev:
+      shared-utils:
         condition: service_started
       database:
         condition: service_healthy
@@ -67,10 +83,11 @@ services:
         source: ./apps/frontend/et-web
         target: /app/apps/frontend/et-web
       - frontend-node-modules:/app/apps/frontend/et-web/node_modules
-      - shared-build:/app/shared/dist
+      - shared-types:/app/types/dist
+      - shared-utils:/app/utils/dist
     depends_on:
-      shared-dev:
-        condition: service_started  
+      shared-utils:
+        condition: service_started
       database:
           condition: service_healthy
 
@@ -79,7 +96,9 @@ volumes:
     driver: local
   backend-node-modules:
     driver: local
-  shared-build:
+  shared-types:
+    driver: local
+  shared-utils:
     driver: local
   db-data:
     driver: local

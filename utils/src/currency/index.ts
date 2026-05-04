@@ -1,4 +1,4 @@
-import { ICurrency } from "src/types";
+import type { ICurrency } from "expense-tracker-types";
 import countries from "../intl-tel-number/countries.json";
 
 export const getCurrencyFromCountryCode = (countryCode: string): ICurrency | null => {

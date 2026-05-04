@@ -28,7 +28,8 @@
     "@tanstack/router-plugin": "1.160.0",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
-    "expense-tracker-shared": "workspace:expense-tracker-shared",
+    "expense-tracker-types": "workspace:expense-tracker-types",
+    "expense-tracker-utils": "workspace:expense-tracker-utils",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-hook-form": "^7.68.0"

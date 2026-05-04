@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IUserTransaction } from 'expense-tracker-shared';
+import type { IUserTransaction } from 'expense-tracker-types';
 import { PgDatabaseConnectionService } from 'src/shared/database/db.connection';
 
 @Injectable()
 export class UserTransactionsService {
     @Inject()
-    private readonly dbConnection: PgDatabaseConnectionService;
+    private readonly dbConnection!: PgDatabaseConnectionService;
 
     constructor() {}
 

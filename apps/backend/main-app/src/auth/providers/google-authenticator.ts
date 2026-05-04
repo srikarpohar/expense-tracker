@@ -1,4 +1,4 @@
-import { SignUpUserRequestDto } from "expense-tracker-shared";
+import type { SignUpUserRequestDto } from "expense-tracker-types";
 import { IAuthenticator } from "./authenticator";
 import { ConfigService } from "@nestjs/config";
 import { FirebaseApp, initializeApp } from "firebase/app";

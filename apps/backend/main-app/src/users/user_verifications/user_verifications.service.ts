@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserVerificationStatus } from 'expense-tracker-shared';
+import { UserVerificationStatus } from 'expense-tracker-types';
 import postgres from 'postgres';
 import { PgDatabaseConnectionService } from 'src/shared/database/db.connection';
 
 @Injectable()
 export class UserVerificationsService {
     @Inject()
-    private readonly dbConnection: PgDatabaseConnectionService;
+    private readonly dbConnection!: PgDatabaseConnectionService;
 
     async createUserSignupVerificationEntry(userId: string): Promise<postgres.Row | undefined> {
         const entry = await this.dbConnection.sqlInstance`

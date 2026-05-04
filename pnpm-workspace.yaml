@@ -1,8 +1,11 @@
 packages:
-  - "shared"
+  - types
+  - utils
+  - "apps/frontend/et-web"
   - "apps/backend/*"
-  - "apps/frontend/*"
-  - "shared/*"
+  - "apps/frontend/et-web/*"
+  - "types/*"
+  - "utils/*"
 syncInjectedDepsAfterScripts:
   - build
 injectWorkspacePackages: true

@@ -2,7 +2,7 @@ import {Controller, Post, Res, UseInterceptors, UploadedFile, Req, Body, Get } f
 import {type Express, type Request, type Response} from "express";
 import { AuthService } from "./auth.service";
 import {FileInterceptor} from "@nestjs/platform-express";
-import { type LoginUserRequestDto, LoginUserResponseDto, SignUpUserRequestDto, SignUpUserResponseDto, type VerifySignupOtpRequestDto, VerifySignupOtpResponseDto, VerifyTokenResponseDTO } from "expense-tracker-shared";
+import type { LoginUserRequestDto, LoginUserResponseDto, SignUpUserRequestDto, SignUpUserResponseDto, VerifySignupOtpRequestDto, VerifySignupOtpResponseDto, VerifyTokenResponseDTO } from "expense-tracker-types";
 import { ResponseDto } from "src/types";
 import { AuthenticatorTypes } from "./providers/authenticator";
 import { ConfigService } from "@nestjs/config";

@@ -1,5 +1,5 @@
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
-import { MONTHS } from ".";
+import { MONTHS } from "./index";
 import "./calendar.module.css";
 
 type ICalendarNavProps = {

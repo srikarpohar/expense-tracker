@@ -1,4 +1,4 @@
-import type { ILogoutUserResponseDTO, IUserPayload, LoginUserRequestDto, LoginUserResponseDto, VerifyTokenResponseDTO } from "expense-tracker-shared";
+import type { ILogoutUserResponseDTO, IUserPayload, LoginUserRequestDto, LoginUserResponseDto, VerifyTokenResponseDTO } from "../../../../../../types/src";
 import { useState, type ReactNode } from "react";
 import { axiosHttpApiRequestLayer } from "../../api-layer/base.service";
 import { AuthContext } from "./auth.context";

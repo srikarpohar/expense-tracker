@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { UsersService } from "src/users/users.service";
 import {JwtService} from "@nestjs/jwt";
-import { IUser, IUserPayload, SignUpUserRequestDto} from "expense-tracker-shared";
+import type { IUser, IUserPayload, SignUpUserRequestDto} from "expense-tracker-types";
 import { AuthenticatorRegistry, AuthenticatorTypes } from "./providers/authenticator";
 import { OTPAuthenticator } from "./providers/otp-authenticator";
 import { UserVerificationsService } from "src/users/user_verifications/user_verifications.service";

@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { Activity, useMemo, useState } from 'react';
-import { type SignUpUserRequestDto, type IUser, type SignUpUserResponseDto, UserVerificationStatus, isValidPhoneNumber, getCountries } from 'expense-tracker-shared';
+import { type SignUpUserRequestDto, type SignUpUserResponseDto, UserVerificationStatus } from 'expense-tracker-types';
+import { isValidPhoneNumber, getCountries } from 'expense-tracker-utils';
 import './signup.module.css';
 import { useMutation } from '@tanstack/react-query';
 import { axiosHttpApiRequestLayer } from '../../../api-layer/base.service';

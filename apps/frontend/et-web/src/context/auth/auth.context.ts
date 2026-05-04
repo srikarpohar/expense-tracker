@@ -1,7 +1,7 @@
 import type {
   IUserPayload,
   LoginUserResponseDto,
-} from "expense-tracker-shared";
+} from "../../../../../../types/src";
 import { createContext } from "react";
 import type { ILoginPageState } from "../../routes/(auth)/login";
 import type { UseMutationResult } from "@tanstack/react-query";

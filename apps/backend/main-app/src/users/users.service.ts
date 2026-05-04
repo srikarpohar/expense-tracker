@@ -1,5 +1,6 @@
 import { BadRequestException, HttpStatus, Inject, Injectable } from "@nestjs/common";
-import {isValidPhoneNumber, IUser} from "expense-tracker-shared";
+import type { IUser } from "expense-tracker-types";
+import { isValidPhoneNumber } from 'expense-tracker-utils';
 import bcrypt from "bcryptjs";
 import postgres from "postgres";
 import { PgDatabaseConnectionService } from "src/shared/database/db.connection";

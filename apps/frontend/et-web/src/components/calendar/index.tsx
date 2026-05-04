@@ -1,4 +1,4 @@
-import { getDaysInMonth } from 'expense-tracker-shared';
+import { getDaysInMonth } from 'expense-tracker-utils';
 import * as React from 'react';
 import "./calendar.module.css";
 import CalendarCell from './cell';
