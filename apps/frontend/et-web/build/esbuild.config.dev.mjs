@@ -183,7 +183,7 @@ const esbuildOptions = {
   bundle: true, // Enable bundling
   format: "esm", // Enable ES Modules
   //   minify: true, // Minify the output for production
-  sourcemap: false, // Generate sourcemaps
+  sourcemap: true, // Generate sourcemaps
   loader: {
     ".png": "file", // Handle PNG images
     ".css": "css",

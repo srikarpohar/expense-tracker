@@ -1,0 +1,84 @@
+# Start from a lightweight Node.js image.
+# Base stage: Set nodejs image as base and set the working directory in this stage.
+FROM dhi.io/node:20-alpine3.23-dev AS base
+# Set environment variables for pnpm, enable corepack for installing pnpm when required, and add pnpm to the PATH.
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+RUN npm install -g typescript
+
+# Shared service: build the shared service for both frontend and backend.
+FROM base AS workspace-init
+
+WORKDIR /app
+COPY pnpm-workspace.yaml package.json ./
+RUN pnpm install
+
+FROM workspace-init AS shared-types
+
+WORKDIR /app/types/
+COPY types/package.json ./
+RUN pnpm install
+
+# Copy all types.
+COPY types/tsconfig.json ./
+COPY types/src ./src
+RUN pnpm run build
+# CMD [ "pnpm", "run", "build" ]
+
+FROM workspace-init AS shared-utils
+
+WORKDIR /app
+COPY --from=shared-types /app/types ./types
+
+WORKDIR /app/utils/
+COPY utils/package.json ./
+RUN pnpm install
+
+COPY utils/tsconfig.json ./
+COPY utils/src ./src
+RUN pnpm run build
+# CMD [ "pnpm", "run", "build" ]
+
+# backend service: build the backend service using the shared service.
+FROM base AS backend-prod
+RUN npm install -g @nestjs/cli
+
+WORKDIR /app
+COPY --from=workspace-init /app/package.json /app/pnpm-workspace.yaml ./
+COPY --from=workspace-init /app/node_modules ./node_modules
+COPY --from=shared-types /app/types ./types/package.json ./types/package-lock.json ./types/tsconfig.json ./types/dist/
+COPY --from=shared-utils /app/utils ./utils/package.json ./utils/package-lock.json ./utils/tsconfig.json ./utils/dist/
+
+WORKDIR /app/apps/backend/main-app/
+COPY apps/backend/main-app/package.json ./
+RUN pnpm install
+
+COPY apps/backend/main-app ./
+WORKDIR /app
+EXPOSE 3000/tcp
+
+RUN pnpm run et-backend build
+CMD ["pnpm", "run", "et-backend", "start:prod"]
+
+# frontend service: build the frontend service using the shared service.
+FROM base AS frontend-prod
+RUN npm i -g npm-run-all @tanstack/router-cli
+
+WORKDIR /app
+COPY --from=workspace-init /app/package.json /app/pnpm-workspace.yaml ./
+COPY --from=workspace-init /app/node_modules ./node_modules
+COPY --from=shared-types /app/types ./types/package.json ./types/package-lock.json ./types/tsconfig.json ./types/dist/
+COPY --from=shared-utils /app/utils ./utils/package.json ./utils/package-lock.json ./utils/tsconfig.json ./utils/dist/
+
+WORKDIR /app/apps/frontend/et-web/
+COPY apps/frontend/et-web/package.json ./
+RUN pnpm install
+COPY apps/frontend/et-web ./
+
+WORKDIR /app
+EXPOSE 4200
+RUN pnpm run et-web generate-routes
+RUN pnpm run et-web build
+# CMD ["pnpm", "run", "et-web", "dev"]
+# "ls",  "-la", "/app/node_modules/.pnpm/@tanstack+router-cli@1.160.0/node_modules", "&&", 

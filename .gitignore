@@ -6,6 +6,7 @@ node_modules
 
 #Environment
 .env
+.env.prod
 
 #Backend
 apps/backend/main-app/assets/
@@ -21,3 +22,4 @@ TODO.md
 
 Calendar View Currency Design.make
 stitch_expense_tracker.zip
+.vercel

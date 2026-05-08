@@ -258,11 +258,7 @@ importers:
         specifier: ^8.46.3
         version: 8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.7.3)
 
-  types:
-    dependencies:
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
+  types: {}
 
   utils:
     dependencies:
@@ -11342,7 +11338,8 @@ snapshots:
 
   typescript@5.7.3: {}
 
-  typescript@5.9.3: {}
+  typescript@5.9.3:
+    optional: true
 
   uid@2.0.2:
     dependencies:
@@ -11465,9 +11462,9 @@ snapshots:
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.15.0
       acorn-import-phases: 1.0.4(acorn@8.15.0)
-      browserslist: 4.27.0
+      browserslist: 4.28.2
       chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.18.3
+      enhanced-resolve: 5.21.0
       es-module-lexer: 1.7.0
       eslint-scope: 5.1.1
       events: 3.3.0
@@ -11478,7 +11475,7 @@ snapshots:
       mime-types: 2.1.35
       neo-async: 2.6.2
       schema-utils: 4.3.3
-      tapable: 2.3.0
+      tapable: 2.3.3
       terser-webpack-plugin: 5.3.14(webpack@5.100.2)
       watchpack: 2.4.4
       webpack-sources: 3.3.3
@@ -11497,9 +11494,9 @@ snapshots:
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.15.0
       acorn-import-phases: 1.0.4(acorn@8.15.0)
-      browserslist: 4.27.0
+      browserslist: 4.28.2
       chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.18.3
+      enhanced-resolve: 5.21.0
       es-module-lexer: 1.7.0
       eslint-scope: 5.1.1
       events: 3.3.0
@@ -11510,7 +11507,7 @@ snapshots:
       mime-types: 2.1.35
       neo-async: 2.6.2
       schema-utils: 4.3.3
-      tapable: 2.3.0
+      tapable: 2.3.3
       terser-webpack-plugin: 5.3.14(esbuild@0.27.7)(webpack@5.100.2(esbuild@0.27.7))
       watchpack: 2.4.4
       webpack-sources: 3.3.3

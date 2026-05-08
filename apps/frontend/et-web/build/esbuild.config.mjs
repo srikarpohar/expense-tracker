@@ -1,10 +1,12 @@
 import esbuild from "esbuild";
 import { tanstackRouter } from '@tanstack/router-plugin/esbuild';
-import tailwindPlugin from "esbuild-plugin-tailwindcss";
+// import tailwindPlugin from "esbuild-plugin-tailwindcss";
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
-dotenv.config();
+dotenv.config({
+  path: "../.env.production"
+});
 
 // Prepare the define object for esbuild
 const define = {};
@@ -15,7 +17,7 @@ for (const k in process.env) {
 
 esbuild
   .build({
-    entryPoints: ["src/index.tsx"],
+    entryPoints: ["src/index.html", "src/index.tsx"],
     outdir: "build/dist",
     jsx: "transform",
     bundle: true, // Enable bundling
@@ -25,6 +27,7 @@ esbuild
     loader: {
       ".png": "file", // Handle PNG images
       ".css": "css", // Handle CSS files
+      ".module.css": "local-css", // Handle CSS files
       ".html": "copy", // Handle HTML files
     },
     logLevel: "info",
@@ -33,7 +36,7 @@ esbuild
     define: define,
     external: ["node_modules/*"], // Exclude specific modules from being bundled (e.g., node_modules)
     plugins: [
-      tailwindPlugin({}),
+      // tailwindPlugin({}),
       tanstackRouter({
         target: 'react',
         autoCodeSplitting: true

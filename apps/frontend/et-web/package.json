@@ -12,9 +12,8 @@
     "eslint-check-only": "npx eslint .",
     "eslint-fix": "npx eslint . --fix",
     "prettier": "npx prettier --write .",
-    "build": "node build/esbuild.config.mjs",
     "esbuild-config": "esbuild-c --config build/esbuild.config.dev.mjs",
-
+    "build:prod": "node build/esbuild.config.mjs", 
     "container-build": "docker compose up -d --build frontend"
   },
   "keywords": [],
