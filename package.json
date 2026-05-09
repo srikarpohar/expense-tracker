@@ -15,7 +15,8 @@
     "app-dev": "docker compose up -d backend-dev frontend-dev",
 
     "backend-build:prod": "docker compose up -d backend-prod",
-    "web-deploy": "vercel --local-config ./vercel.json"
+    "web-deploy": "vercel --local-config ./vercel.json",
+    "web-deploy:prod": "vercel --prod --local-config ./vercel.json"
   },
   "keywords": [],
   "author": "",
