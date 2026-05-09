@@ -39,25 +39,25 @@ COPY utils/src ./src
 RUN pnpm -w run et-utils build
 
 # backend service: build the backend service using the shared service.
-FROM base AS backend-prod
-RUN npm install -g @nestjs/cli
+# FROM base AS backend-prod
+# RUN npm install -g @nestjs/cli
 
-WORKDIR /app
-COPY --from=workspace-init /app/package.json /app/pnpm-workspace.yaml ./
-COPY --from=workspace-init /app/node_modules ./node_modules
-COPY --from=shared-types /app/types ./types/package.json ./types/package-lock.json ./types/dist/
-COPY --from=shared-utils /app/utils ./utils/package.json ./utils/package-lock.json ./utils/dist/
+# WORKDIR /app
+# COPY --from=workspace-init /app/package.json /app/pnpm-workspace.yaml ./
+# COPY --from=workspace-init /app/node_modules ./node_modules
+# COPY --from=shared-types /app/types ./types/
+# COPY --from=shared-utils /app/utils ./utils/
 
-WORKDIR /app/apps/backend/main-app/
-COPY apps/backend/main-app/package.json ./
-RUN pnpm install
+# WORKDIR /app/apps/backend/main-app/
+# COPY apps/backend/main-app/package.json ./
+# RUN pnpm install
 
-COPY apps/backend/main-app ./
-WORKDIR /app
-EXPOSE 3000/tcp
+# COPY apps/backend/main-app ./
+# WORKDIR /app
+# EXPOSE 3000/tcp
 
-RUN pnpm run et-backend build
-CMD ["pnpm", "run", "et-backend", "start:prod"]
+# RUN pnpm run et-backend build
+# CMD ["pnpm", "run", "et-backend", "start:prod"]
 
 # frontend service: build the frontend service using the shared service.
 FROM base AS frontend-prod
@@ -66,8 +66,8 @@ RUN npm i -g npm-run-all @tanstack/router-cli
 WORKDIR /app
 COPY --from=workspace-init /app/package.json /app/pnpm-workspace.yaml ./
 COPY --from=workspace-init /app/node_modules ./node_modules
-COPY --from=shared-types /app/types ./types/package.json ./types/package-lock.json ./types/tsconfig.json ./types/dist/
-COPY --from=shared-utils /app/utils ./utils/package.json ./utils/package-lock.json ./utils/tsconfig.json ./utils/dist/
+COPY --from=shared-types /app/types ./types/
+COPY --from=shared-utils /app/utils ./utils/
 
 WORKDIR /app/apps/frontend/et-web/
 COPY apps/frontend/et-web/package.json ./
@@ -75,6 +75,6 @@ RUN pnpm install
 COPY apps/frontend/et-web ./
 
 WORKDIR /app
-EXPOSE 4200
+EXPOSE 4200/tcp
 RUN pnpm run et-web generate-routes
 RUN pnpm run et-web build
