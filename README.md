@@ -40,4 +40,10 @@ Made using React.js, NestJS, PostgreSQL and Docker.
 
 # Deployment URL:
 
-[Frontend - https://expense-tracker-reua8mhxt-srikarpohars-projects.vercel.app/](https://expense-tracker-reua8mhxt-srikarpohars-projects.vercel.app/)
+1. Frontend:
+[Dashboard](https://vercel.com/srikarpohars-projects/expense-tracker)
+[URL](https://expense-tracker-cyan-ten-25.vercel.app/login?redirect=%2F)
+
+2. Backend
+[Dashboard](https://dashboard.render.com/web/srv-d7uoiqe7r5hc73baldu0/events)
+[URL](https://expense-tracker-z918.onrender.com)
