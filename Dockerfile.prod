@@ -77,4 +77,4 @@ COPY apps/frontend/et-web ./
 WORKDIR /app
 EXPOSE 4200/tcp
 RUN pnpm run et-web generate-routes
-RUN pnpm run et-web build
+RUN pnpm run et-web build:prod
