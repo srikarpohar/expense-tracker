@@ -89,27 +89,28 @@ services:
         condition: service_started
       database:
           condition: service_healthy
-  database-prod:
-    image: postgres:18
-    secrets:
-      - db-credentials
-    ports:
-      - "5435:5432"
-    entrypoint:
-      - /bin/bash
-      - -c
-      - |
-        set -a
-        source /run/secrets/db-credentials
-        set +a
-        exec docker-entrypoint.sh postgres
-    healthcheck:
-      test: ["CMD-SHELL", "set -a && . /run/secrets/db-credentials && pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-    volumes:
-      - db-data:/var/lib/postgresql
+  
+  # database-prod:
+  #   image: postgres:18
+  #   secrets:
+  #     - db-credentials
+  #   ports:
+  #     - "5435:5432"
+  #   entrypoint:
+  #     - /bin/bash
+  #     - -c
+  #     - |
+  #       set -a
+  #       source /run/secrets/db-credentials
+  #       set +a
+  #       exec docker-entrypoint.sh postgres
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "set -a && . /run/secrets/db-credentials && pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 5
+  #   volumes:
+  #     - db-data:/var/lib/postgresql
 
   backend-prod:
     ports:
@@ -118,9 +119,6 @@ services:
       context: .
       dockerfile: Dockerfile.prod
       target: backend-prod
-    depends_on:
-      database-prod:
-        condition: service_healthy
 
   frontend-prod:
     ports:
@@ -129,9 +127,6 @@ services:
       context: .
       dockerfile: Dockerfile.prod
       target: frontend-prod
-    depends_on:
-      database-prod:
-        condition: service_healthy
 
 volumes:
   frontend-node-modules:
