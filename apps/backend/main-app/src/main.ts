@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    origin: "http://localhost:4200",
+    origin: ["http://localhost:4200", "https://expense-tracker-cyan-ten-25.vercel.app"],
     credentials: true,
     allowedHeaders: "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
