@@ -45,8 +45,8 @@ RUN npm install -g @nestjs/cli
 WORKDIR /app
 COPY --from=workspace-init /app/package.json /app/pnpm-workspace.yaml ./
 COPY --from=workspace-init /app/node_modules ./node_modules
-COPY --from=shared-types /app/types ./types/package.json ./types/package-lock.json ./types/tsconfig.json ./types/dist/
-COPY --from=shared-utils /app/utils ./utils/package.json ./utils/package-lock.json ./utils/tsconfig.json ./utils/dist/
+COPY --from=shared-types /app/types ./types/package.json ./types/package-lock.json ./types/dist/
+COPY --from=shared-utils /app/utils ./utils/package.json ./utils/package-lock.json ./utils/dist/
 
 WORKDIR /app/apps/backend/main-app/
 COPY apps/backend/main-app/package.json ./
