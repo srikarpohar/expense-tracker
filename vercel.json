@@ -1,6 +1,6 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "buildCommand": "chmod +x ./frontend-build.sh",
+    "buildCommand": "pnpm run web-build:prod",
     "framework": "create-react-app",
     "installCommand": "pnpm install",
     "outputDirectory": "./apps/frontend/et-web/build/dist"
