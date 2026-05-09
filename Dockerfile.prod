@@ -60,21 +60,21 @@ RUN pnpm run et-backend build
 CMD ["pnpm", "run", "et-backend", "start:prod"]
 
 # frontend service: build the frontend service using the shared service.
-FROM base AS frontend-prod
-RUN npm i -g npm-run-all @tanstack/router-cli
+# FROM base AS frontend-prod
+# RUN npm i -g npm-run-all @tanstack/router-cli
 
-WORKDIR /app
-COPY --from=workspace-init /app/package.json /app/pnpm-workspace.yaml ./
-COPY --from=workspace-init /app/node_modules ./node_modules
-COPY --from=shared-types /app/types ./types/
-COPY --from=shared-utils /app/utils ./utils/
+# WORKDIR /app
+# COPY --from=workspace-init /app/package.json /app/pnpm-workspace.yaml ./
+# COPY --from=workspace-init /app/node_modules ./node_modules
+# COPY --from=shared-types /app/types ./types/
+# COPY --from=shared-utils /app/utils ./utils/
 
-WORKDIR /app/apps/frontend/et-web/
-COPY apps/frontend/et-web/package.json ./
-RUN pnpm install
-COPY apps/frontend/et-web ./
+# WORKDIR /app/apps/frontend/et-web/
+# COPY apps/frontend/et-web/package.json ./
+# RUN pnpm install
+# COPY apps/frontend/et-web ./
 
-WORKDIR /app
-EXPOSE 4200/tcp
-RUN pnpm run et-web generate-routes
-RUN pnpm run et-web build:prod
+# WORKDIR /app
+# EXPOSE 4200/tcp
+# RUN pnpm run et-web generate-routes
+# RUN pnpm run et-web build:prod
