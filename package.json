@@ -14,9 +14,8 @@
     "app-build": "docker compose build backend-dev frontend-dev shared-dev",
     "app-dev": "docker compose up -d backend-dev frontend-dev",
 
-    "web-build:prod": "docker compose up -d frontend-prod",
     "backend-build:prod": "docker compose up -d backend-prod",
-    "web-deploy": "vercel --local-config ./vercel.frontend.json"
+    "web-deploy": "vercel --local-config ./vercel.json"
   },
   "keywords": [],
   "author": "",
