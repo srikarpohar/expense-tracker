@@ -117,7 +117,7 @@ export class AxiosHttpApiRequestLayer implements IHTTPClient {
 }
 
 const axiosHttpApiRequestLayer = new AxiosHttpApiRequestLayer(
-  process.env.API_BASE_URL || "", // TODO: change this to use env variable.
+  process.env.REACT_APP_API_BASE_URL || "", // TODO: change this to use env variable.
 );
 axiosHttpApiRequestLayer.addRequestInterceptor(addTokenRequestInterceptor);
 axiosHttpApiRequestLayer.addResponseInterceptor(

@@ -1,4 +1,4 @@
-import type { ILogoutUserResponseDTO, IUserPayload, LoginUserRequestDto, LoginUserResponseDto, VerifyTokenResponseDTO } from "../../../../../../types/src";
+import type { ILogoutUserResponseDTO, IUserPayload, LoginUserRequestDto, LoginUserResponseDto, VerifyTokenResponseDTO } from "expense-tracker-types";
 import { useState, type ReactNode } from "react";
 import { axiosHttpApiRequestLayer } from "../../api-layer/base.service";
 import { AuthContext } from "./auth.context";
@@ -25,7 +25,7 @@ const isBrowser = () => typeof window !== "undefined";
 
 const persistVerifyTokenResponse = (response: VerifyTokenResponseDTO) => {
   if (!isBrowser()) return;
-  const authTokenDuration = parseInt(process.env.AUTH_TOKEN_DURATION || '0');
+  const authTokenDuration = parseInt(process.env.REACT_APP_AUTH_TOKEN_DURATION || '0');
   window.localStorage.setItem(VERIFY_TOKEN_RESPONSE_KEY, JSON.stringify({
     ...response,
     expiryTime: Date.now() + authTokenDuration * 1000,

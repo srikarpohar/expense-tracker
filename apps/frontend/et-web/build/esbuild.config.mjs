@@ -4,7 +4,9 @@ import { tanstackRouter } from '@tanstack/router-plugin/esbuild';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
-dotenv.config();
+dotenv.config({
+  path: path.resolve(process.cwd(), '.env.production')
+});
 
 // Prepare the define object for esbuild
 const define = {};
