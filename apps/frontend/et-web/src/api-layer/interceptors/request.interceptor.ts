@@ -1,11 +1,5 @@
 export const addTokenRequestInterceptor = (config: any) => {
-  // TODO: change this token usage.
-  const token = localStorage.getItem("authToken");
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    };
-  }
+  // Since we're using httpOnly cookies, the token is sent automatically
+  // with withCredentials: true. No need to manually add Authorization header.
   return config;
 };

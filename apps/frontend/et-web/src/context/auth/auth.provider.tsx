@@ -169,7 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
         isLoading: false,
       };
-      // persistAuthToken(response.token);
+      // Token is stored in httpOnly cookie by backend, no need to store in localStorage
       persistVerifyTokenResponse(cachedVerifyTokenResponse.data);
       queryClient.setQueryData(["verify-token"], cachedVerifyTokenResponse);
       setUserData(response.payload);

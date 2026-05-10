@@ -20,7 +20,7 @@ esbuild
     jsx: "transform",
     bundle: true, // Enable bundling
     format: "esm", // Enable ES Modules
-    minify: true, // Minify the output for production
+    minify: { css: false, js: true }, // Minify JS but preserve CSS class names
     sourcemap: true, // Generate sourcemaps
     loader: {
       ".png": "file", // Handle PNG images
