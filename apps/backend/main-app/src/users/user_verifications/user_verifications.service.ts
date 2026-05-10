@@ -10,16 +10,12 @@ export class UserVerificationsService {
 
     async createUserSignupVerificationEntry(userId: string): Promise<postgres.Row | undefined> {
         const entry = await this.dbConnection.sqlInstance`
-            INSERT INTO user_signup_verifications
-            ${this.dbConnection.sqlInstance({ 
-                user_id: userId, 
-                verification_status: UserVerificationStatus.OTP_SENT, 
-                no_of_attempts: 0 
-            })}
+            INSERT INTO user_signup_verifications (user_id, verification_status, no_of_attempts)
+            VALUES (${userId}, ${UserVerificationStatus.OTP_SENT}, 0)
             ON CONFLICT(user_id)
             DO UPDATE SET
-                verification_status=${UserVerificationStatus.OTP_SENT},
-                no_of_attempts=no_of_attempts + 1
+                verification_status = ${UserVerificationStatus.OTP_SENT},
+                no_of_attempts = user_signup_verifications.no_of_attempts + 1
             RETURNING *;
         `;
         return entry.at(0);
