@@ -47,3 +47,6 @@ Made using React.js, NestJS, PostgreSQL and Docker.
 2. Backend
 [Dashboard](https://dashboard.render.com/web/srv-d7uoiqe7r5hc73baldu0/events)
 [URL](https://expense-tracker-z918.onrender.com)
+
+3. Database
+[Dashboard](https://supabase.com/dashboard/project/gvmkptdlvhouhaiykkpc)
