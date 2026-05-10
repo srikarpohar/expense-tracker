@@ -20,7 +20,6 @@ esbuild
     jsx: "transform",
     bundle: true, // Enable bundling
     format: "esm", // Enable ES Modules
-    minify: true,
     minifyIdentifiers: false,
     sourcemap: true, // Generate sourcemaps
     loader: {
